@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		721B96331C476C1B008158B5 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721B96321C476C1B008158B5 /* Account.swift */; };
+		721B96351C476D23008158B5 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721B96341C476D23008158B5 /* Transaction.swift */; };
 		72FAC6631C472A1A0068EE78 /* Plaidster.h in Headers */ = {isa = PBXBuildFile; fileRef = 72FAC6621C472A1A0068EE78 /* Plaidster.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		72FAC66A1C472A1A0068EE78 /* Plaidster.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72FAC65F1C472A1A0068EE78 /* Plaidster.framework */; };
 		72FAC66F1C472A1A0068EE78 /* PlaidsterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC66E1C472A1A0068EE78 /* PlaidsterTests.swift */; };
+		72FAC67A1C472A4C0068EE78 /* Plaidster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC6791C472A4C0068EE78 /* Plaidster.swift */; };
+		72FAC67C1C472CA80068EE78 /* Institution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC67B1C472CA80068EE78 /* Institution.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,12 +27,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		721B96321C476C1B008158B5 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		721B96341C476D23008158B5 /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		72FAC65F1C472A1A0068EE78 /* Plaidster.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plaidster.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		72FAC6621C472A1A0068EE78 /* Plaidster.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Plaidster.h; sourceTree = "<group>"; };
 		72FAC6641C472A1A0068EE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72FAC6691C472A1A0068EE78 /* PlaidsterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlaidsterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		72FAC66E1C472A1A0068EE78 /* PlaidsterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaidsterTests.swift; sourceTree = "<group>"; };
 		72FAC6701C472A1A0068EE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		72FAC6791C472A4C0068EE78 /* Plaidster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plaidster.swift; sourceTree = "<group>"; };
+		72FAC67B1C472CA80068EE78 /* Institution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Institution.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +80,10 @@
 			isa = PBXGroup;
 			children = (
 				72FAC6621C472A1A0068EE78 /* Plaidster.h */,
+				72FAC6791C472A4C0068EE78 /* Plaidster.swift */,
+				72FAC67B1C472CA80068EE78 /* Institution.swift */,
+				721B96321C476C1B008158B5 /* Account.swift */,
+				721B96341C476D23008158B5 /* Transaction.swift */,
 				72FAC6641C472A1A0068EE78 /* Info.plist */,
 			);
 			path = Plaidster;
@@ -194,6 +206,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72FAC67C1C472CA80068EE78 /* Institution.swift in Sources */,
+				72FAC67A1C472A4C0068EE78 /* Plaidster.swift in Sources */,
+				721B96351C476D23008158B5 /* Transaction.swift in Sources */,
+				721B96331C476C1B008158B5 /* Account.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +324,7 @@
 		72FAC6741C472A1A0068EE78 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -318,12 +335,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.istx25.Plaidster;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		72FAC6751C472A1A0068EE78 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -376,6 +395,7 @@
 				72FAC6751C472A1A0068EE78 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		72FAC6761C472A1A0068EE78 /* Build configuration list for PBXNativeTarget "PlaidsterTests" */ = {
 			isa = XCConfigurationList;
@@ -384,6 +404,7 @@
 				72FAC6781C472A1A0068EE78 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
