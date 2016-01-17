@@ -1,5 +1,5 @@
 //
-//  PlaidInstitution.swift
+//  Institution.swift
 //  Plaidster
 //
 //  Created by Willow Bumby on 2016-01-13.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct PlaidInstitution {
+public struct Institution {
     static let Amex = "amex"
     static let Bofa = "bofa"
     static let Capone360 = "capone360"

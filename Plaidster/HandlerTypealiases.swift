@@ -1,5 +1,5 @@
 //
-//  Typealias.swift
+//  HandlerTypealiases.swift
 //  Plaidster
 //
 //  Created by Willow Bumby on 2016-01-17.

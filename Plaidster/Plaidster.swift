@@ -44,7 +44,7 @@ public struct Plaidster {
     }
     
     // MARK: Methods
-    func addUser(userType: PlaidUserType, username: String, password: String, pin: String?, institution: PlaidInstitution, handler: AddUserHandler) {
+    func addUser(userType: PlaidUserType, username: String, password: String, pin: String?, institution: Institution, handler: AddUserHandler) {
         let optionsDictionaryString = self.dictionaryToString(["list": true])
         var URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&username=\(username)&password=\(password.encodeValue)"
         

@@ -14,12 +14,12 @@
 		72218D6A1C4C337400CFC23D /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72218D691C4C337400CFC23D /* HTTPMethod.swift */; };
 		72218D6C1C4C384800CFC23D /* PlaidError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72218D6B1C4C384800CFC23D /* PlaidError.swift */; };
 		72218D6F1C4C412600CFC23D /* PlaidsterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72218D6E1C4C412600CFC23D /* PlaidsterError.swift */; };
-		72218D711C4C439B00CFC23D /* Typealias.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72218D701C4C439B00CFC23D /* Typealias.swift */; };
+		72218D711C4C439B00CFC23D /* HandlerTypealiases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72218D701C4C439B00CFC23D /* HandlerTypealiases.swift */; };
 		72FAC6631C472A1A0068EE78 /* Plaidster.h in Headers */ = {isa = PBXBuildFile; fileRef = 72FAC6621C472A1A0068EE78 /* Plaidster.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		72FAC66A1C472A1A0068EE78 /* Plaidster.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72FAC65F1C472A1A0068EE78 /* Plaidster.framework */; };
 		72FAC66F1C472A1A0068EE78 /* PlaidsterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC66E1C472A1A0068EE78 /* PlaidsterTests.swift */; };
 		72FAC67A1C472A4C0068EE78 /* Plaidster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC6791C472A4C0068EE78 /* Plaidster.swift */; };
-		72FAC67C1C472CA80068EE78 /* PlaidInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC67B1C472CA80068EE78 /* PlaidInstitution.swift */; };
+		72FAC67C1C472CA80068EE78 /* Institution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC67B1C472CA80068EE78 /* Institution.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,7 +40,7 @@
 		72218D691C4C337400CFC23D /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		72218D6B1C4C384800CFC23D /* PlaidError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidError.swift; sourceTree = "<group>"; };
 		72218D6E1C4C412600CFC23D /* PlaidsterError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidsterError.swift; sourceTree = "<group>"; };
-		72218D701C4C439B00CFC23D /* Typealias.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Typealias.swift; sourceTree = "<group>"; };
+		72218D701C4C439B00CFC23D /* HandlerTypealiases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HandlerTypealiases.swift; sourceTree = "<group>"; };
 		72FAC65F1C472A1A0068EE78 /* Plaidster.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plaidster.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		72FAC6621C472A1A0068EE78 /* Plaidster.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Plaidster.h; sourceTree = "<group>"; };
 		72FAC6641C472A1A0068EE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -48,7 +48,7 @@
 		72FAC66E1C472A1A0068EE78 /* PlaidsterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaidsterTests.swift; sourceTree = "<group>"; };
 		72FAC6701C472A1A0068EE78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		72FAC6791C472A4C0068EE78 /* Plaidster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plaidster.swift; sourceTree = "<group>"; };
-		72FAC67B1C472CA80068EE78 /* PlaidInstitution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidInstitution.swift; sourceTree = "<group>"; };
+		72FAC67B1C472CA80068EE78 /* Institution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Institution.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,9 +73,9 @@
 		721B96381C477676008158B5 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
-				721B96361C47758B008158B5 /* String+Encoding.swift */,
+				72FAC67B1C472CA80068EE78 /* Institution.swift */,
+				72218D701C4C439B00CFC23D /* HandlerTypealiases.swift */,
 				721B96391C4776B2008158B5 /* Plaidster+Helper.swift */,
-				72218D691C4C337400CFC23D /* HTTPMethod.swift */,
 			);
 			name = Helper;
 			sourceTree = "<group>";
@@ -83,11 +83,28 @@
 		72218D6D1C4C411B00CFC23D /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
-				72218D6E1C4C412600CFC23D /* PlaidsterError.swift */,
-				72218D6B1C4C384800CFC23D /* PlaidError.swift */,
-				72218D701C4C439B00CFC23D /* Typealias.swift */,
+				72FAC6621C472A1A0068EE78 /* Plaidster.h */,
+				72FAC6641C472A1A0068EE78 /* Info.plist */,
 			);
 			name = Supporting;
+			sourceTree = "<group>";
+		};
+		72218D731C4C4DCE00CFC23D /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				72218D6E1C4C412600CFC23D /* PlaidsterError.swift */,
+				72218D6B1C4C384800CFC23D /* PlaidError.swift */,
+			);
+			name = Error;
+			sourceTree = "<group>";
+		};
+		72218D741C4C4DF200CFC23D /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				721B96361C47758B008158B5 /* String+Encoding.swift */,
+				72218D691C4C337400CFC23D /* HTTPMethod.swift */,
+			);
+			name = Lib;
 			sourceTree = "<group>";
 		};
 		72FAC6551C472A1A0068EE78 = {
@@ -111,14 +128,13 @@
 		72FAC6611C472A1A0068EE78 /* Plaidster */ = {
 			isa = PBXGroup;
 			children = (
-				72FAC6621C472A1A0068EE78 /* Plaidster.h */,
 				72FAC6791C472A4C0068EE78 /* Plaidster.swift */,
-				72FAC67B1C472CA80068EE78 /* PlaidInstitution.swift */,
+				72218D741C4C4DF200CFC23D /* Lib */,
 				721B96321C476C1B008158B5 /* Account.swift */,
 				721B96341C476D23008158B5 /* Transaction.swift */,
-				72218D6D1C4C411B00CFC23D /* Supporting */,
+				72218D731C4C4DCE00CFC23D /* Error */,
 				721B96381C477676008158B5 /* Helper */,
-				72FAC6641C472A1A0068EE78 /* Info.plist */,
+				72218D6D1C4C411B00CFC23D /* Supporting */,
 			);
 			path = Plaidster;
 			sourceTree = "<group>";
@@ -240,11 +256,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72FAC67C1C472CA80068EE78 /* PlaidInstitution.swift in Sources */,
+				72FAC67C1C472CA80068EE78 /* Institution.swift in Sources */,
 				721B96371C47758B008158B5 /* String+Encoding.swift in Sources */,
 				72218D6A1C4C337400CFC23D /* HTTPMethod.swift in Sources */,
 				721B963A1C4776B2008158B5 /* Plaidster+Helper.swift in Sources */,
-				72218D711C4C439B00CFC23D /* Typealias.swift in Sources */,
+				72218D711C4C439B00CFC23D /* HandlerTypealiases.swift in Sources */,
 				72FAC67A1C472A4C0068EE78 /* Plaidster.swift in Sources */,
 				72218D6F1C4C412600CFC23D /* PlaidsterError.swift in Sources */,
 				721B96351C476D23008158B5 /* Transaction.swift in Sources */,
