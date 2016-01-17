@@ -9,3 +9,5 @@
 internal typealias AddUserHandler = (response: NSURLResponse?, accessToken: String, MFAType: String?, MFA: [[String: AnyObject]]?, accounts: [Account]?, transactions: [Transaction]?, error: NSError?) -> (Void)
 
 internal typealias SubmitMFAHandler = (response: NSURLResponse?, accounts: [Account]?, transactions: [Transaction]?, error: NSError?) -> (Void)
+internal typealias FetchUserBalanceHandler = (response: NSURLResponse?, accounts:[Account], error:NSError?) -> (Void)
+internal typealias FetchUserTransactionsHandler = (response: NSURLResponse?, transactions:[Transaction], error:NSError?) -> (Void)

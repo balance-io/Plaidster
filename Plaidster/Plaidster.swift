@@ -28,7 +28,7 @@ public struct Plaidster {
     // MARK: Properties
     let clientID: String
     let secret: String
-    let baseURL: NSURL
+    let baseURL: String
     
     // MARK: Initialisation
     init(clientID: String, secret: String, mode: PlaidEnvironment) {
@@ -37,9 +37,9 @@ public struct Plaidster {
         
         switch mode {
         case .Development:
-            self.baseURL = NSURL(string: Plaidster.DevelopmentBaseURL)!
+            self.baseURL = Plaidster.DevelopmentBaseURL
         case .Production:
-            self.baseURL = NSURL(string: Plaidster.ProductionBaseURL)!
+            self.baseURL = Plaidster.ProductionBaseURL
         }
     }
     
@@ -56,9 +56,9 @@ public struct Plaidster {
         
         let URL = NSURL(string: URLString)!
         let request = NSMutableURLRequest(URL: URL)
-        let session = NSURLSession.sharedSession()
         request.HTTPMethod = HTTPMethod.Post
         
+        let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
             do {
@@ -108,9 +108,9 @@ public struct Plaidster {
         
         let URL = NSURL(string: URLString)!
         let request = NSMutableURLRequest(URL: URL)
-        let session = NSURLSession.sharedSession()
         request.HTTPMethod = HTTPMethod.Post
         
+        let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
             
@@ -136,7 +136,65 @@ public struct Plaidster {
                 // Handle `throw` statements.
                 debugPrint("submitMFAResponse(_;) Error: \(error)")
             }
+        }
+        
+        task.resume()
+    }
+    
+    func fetchUserBalance(accessToken: String, handler: FetchUserBalanceHandler) {
+        let URLString = "\(baseURL)balance?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
+        let URL = NSURL(string: URLString)!
+        
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
             
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                let code = JSONResult["code"] as? Int
+                guard code != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
+                guard code != PlaidErrorCode.BadAccessToken else { throw PlaidError.BadAccessToken }
+                guard let unmanagedAccounts = JSONResult["accounts"] as? [[String:AnyObject]] else { throw JSONError.Empty }
+                let managedAccounts = unmanagedAccounts.map { Account(account: $0) }
+                handler(response: response, accounts: managedAccounts, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("fetchUserBalance(_;) Error: \(error)")
+            }
+        }
+        
+        task.resume()
+    }
+    
+    func fetchUserTransactions(accessToken: String, showPending: Bool, beginDate: String?, endDate: String?, handler: FetchUserTransactionsHandler) {
+        var optionsDictionary: [String: AnyObject] = ["pending": true]
+        if let beginDate = beginDate { optionsDictionary["gte"] = beginDate }
+        if let endDate = endDate { optionsDictionary["lte"] = endDate }
+        
+        let optionsDictionaryString = self.dictionaryToString(optionsDictionary)
+        let URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)&\(optionsDictionaryString.encodeValue)"
+        let URL = NSURL(string: URLString)!
+        let session = NSURLSession.sharedSession()
+        
+        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
+            
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                guard JSONResult["code"] as? Int != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
+                guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]] else { throw JSONError.Empty }
+                let managedTransactions = unmanagedTransactions.map { Transaction(transaction: $0) }
+                handler(response: response, transactions: managedTransactions, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("fetchUserTransactions(_;) Error: \(error)")
+            }
         }
         
         task.resume()
