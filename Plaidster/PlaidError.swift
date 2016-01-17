@@ -12,7 +12,7 @@ internal enum PlaidError: ErrorType {
     case BadAccessToken
     case CredentialsMissing(String)
     case InvalidCredentials(String)
-    case IncorrectMFA(String)
+    case InvalidMFA(String)
     case InstitutionNotAvailable
 }
 

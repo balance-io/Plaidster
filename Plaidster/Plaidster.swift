@@ -45,8 +45,7 @@ public struct Plaidster {
     
     // MARK: Methods
     func addUser(userType: PlaidUserType, username: String, password: String, pin: String?, institution: PlaidInstitution, handler: AddUserHandler) {
-        let optionsDictionary = ["list": true]
-        let optionsDictionaryString = self.dictionaryToString(optionsDictionary)
+        let optionsDictionaryString = self.dictionaryToString(["list": true])
         var URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&username=\(username)&password=\(password.encodeValue)"
         
         if let pin = pin {
@@ -67,11 +66,11 @@ public struct Plaidster {
                     throw JSONError.DecodingFailed
                 }
                 
-                let value = JSONResult["code"] as? Int
-                guard value != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
+                let code = JSONResult["code"] as? Int
+                guard code != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
                 if let resolve = JSONResult["resolve"] as? String {
-                    guard value != PlaidErrorCode.InvalidCredentials else { throw PlaidError.InvalidCredentials(resolve) }
-                    guard value != PlaidErrorCode.ProductNotFound else { throw PlaidError.CredentialsMissing(resolve) }
+                    guard code != PlaidErrorCode.InvalidCredentials else { throw PlaidError.InvalidCredentials(resolve) }
+                    guard code != PlaidErrorCode.ProductNotFound else { throw PlaidError.CredentialsMissing(resolve) }
                 }
                 
                 guard let token = JSONResult["access_token"] as? String else { throw JSONError.DecodingFailed }
@@ -92,6 +91,52 @@ public struct Plaidster {
                 // Handle `throw` statements.
                 debugPrint("addUser(_;) Error: \(error)")
             }
+        }
+        
+        task.resume()
+    }
+    
+    func submitMFAResponse(accessToken: String, code: Bool?, response: String, handler: SubmitMFAHandler) {
+        let optionsDictionaryString = self.dictionaryToString(["send_method": response])
+        var URLString = "\(baseURL)connect/step?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
+
+        if true == code {
+            URLString += "&options=\(optionsDictionaryString.encodeValue)"
+        } else {
+            URLString += "&mfa=\(response.encodeValue)"
+        }
+        
+        let URL = NSURL(string: URLString)!
+        let request = NSMutableURLRequest(URL: URL)
+        let session = NSURLSession.sharedSession()
+        request.HTTPMethod = HTTPMethod.Post
+        
+        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
+            
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                let code = JSONResult["code"] as? Int
+                let accounts = JSONResult["accounts"] as? [[String:AnyObject]]
+                guard code != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
+                guard accounts != nil else { throw JSONError.Empty }
+                if let resolve = JSONResult["resolve"] as? String {
+                    guard code != PlaidErrorCode.InvalidMFA else { throw PlaidError.InvalidMFA(resolve) }
+                }
+                
+                let unmanagedTransactions = JSONResult["transactions"] as! [[String: AnyObject]]
+                let managedTransactions = unmanagedTransactions.map { Transaction(transaction: $0) }
+                let unmanagedAccounts = JSONResult["accounts"] as! [[String: AnyObject]]
+                let managedAccounts = unmanagedAccounts.map { Account(account: $0) }
+                handler(response: response, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("submitMFAResponse(_;) Error: \(error)")
+            }
+            
         }
         
         task.resume()
