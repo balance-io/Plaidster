@@ -77,34 +77,35 @@
 				72218D701C4C439B00CFC23D /* HandlerTypealiases.swift */,
 				721B96391C4776B2008158B5 /* Plaidster+Helper.swift */,
 			);
-			name = Helper;
+			path = Helper;
 			sourceTree = "<group>";
 		};
 		72218D6D1C4C411B00CFC23D /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
-				72FAC6621C472A1A0068EE78 /* Plaidster.h */,
+				72218D741C4C4DF200CFC23D /* Lib */,
 				72FAC6641C472A1A0068EE78 /* Info.plist */,
+				72FAC6621C472A1A0068EE78 /* Plaidster.h */,
 			);
-			name = Supporting;
+			path = Supporting;
 			sourceTree = "<group>";
 		};
 		72218D731C4C4DCE00CFC23D /* Error */ = {
 			isa = PBXGroup;
 			children = (
-				72218D6E1C4C412600CFC23D /* PlaidsterError.swift */,
 				72218D6B1C4C384800CFC23D /* PlaidError.swift */,
+				72218D6E1C4C412600CFC23D /* PlaidsterError.swift */,
 			);
-			name = Error;
+			path = Error;
 			sourceTree = "<group>";
 		};
 		72218D741C4C4DF200CFC23D /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				721B96361C47758B008158B5 /* String+Encoding.swift */,
 				72218D691C4C337400CFC23D /* HTTPMethod.swift */,
+				721B96361C47758B008158B5 /* String+Encoding.swift */,
 			);
-			name = Lib;
+			path = Lib;
 			sourceTree = "<group>";
 		};
 		72FAC6551C472A1A0068EE78 = {
@@ -129,11 +130,10 @@
 			isa = PBXGroup;
 			children = (
 				72FAC6791C472A4C0068EE78 /* Plaidster.swift */,
-				72218D741C4C4DF200CFC23D /* Lib */,
+				721B96381C477676008158B5 /* Helper */,
 				721B96321C476C1B008158B5 /* Account.swift */,
 				721B96341C476D23008158B5 /* Transaction.swift */,
 				72218D731C4C4DCE00CFC23D /* Error */,
-				721B96381C477676008158B5 /* Helper */,
 				72218D6D1C4C411B00CFC23D /* Supporting */,
 			);
 			path = Plaidster;
@@ -142,8 +142,8 @@
 		72FAC66D1C472A1A0068EE78 /* PlaidsterTests */ = {
 			isa = PBXGroup;
 			children = (
-				72FAC66E1C472A1A0068EE78 /* PlaidsterTests.swift */,
 				72FAC6701C472A1A0068EE78 /* Info.plist */,
+				72FAC66E1C472A1A0068EE78 /* PlaidsterTests.swift */,
 			);
 			path = PlaidsterTests;
 			sourceTree = "<group>";
@@ -385,7 +385,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = Plaidster/Info.plist;
+				INFOPLIST_FILE = Plaidster/Supporting/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.istx25.Plaidster;
@@ -403,7 +403,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = Plaidster/Info.plist;
+				INFOPLIST_FILE = Plaidster/Supporting/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.istx25.Plaidster;
