@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "2A63BC41B916F5CE2B51A776CF473F9841915587",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "944E7F13E475B908215FCA48288DF3ACBD649B84" : 0,
+    "2A63BC41B916F5CE2B51A776CF473F9841915587" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "D8E69269-809F-4AD1-A575-75A940649C2B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "944E7F13E475B908215FCA48288DF3ACBD649B84" : "..",
+    "2A63BC41B916F5CE2B51A776CF473F9841915587" : "Plaidster\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Plaidster",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Plaidster.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:einsteinx2\/Plaidster.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "2A63BC41B916F5CE2B51A776CF473F9841915587"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:ricburton\/bal.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "944E7F13E475B908215FCA48288DF3ACBD649B84"
+    }
+  ]
+}

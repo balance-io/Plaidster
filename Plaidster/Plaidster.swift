@@ -31,7 +31,7 @@ public struct Plaidster {
     let baseURL: String
     
     // MARK: Initialisation
-    init(clientID: String, secret: String, mode: PlaidEnvironment) {
+    public init(clientID: String, secret: String, mode: PlaidEnvironment) {
         self.clientID = clientID
         self.secret = secret
         
@@ -44,7 +44,7 @@ public struct Plaidster {
     }
     
     // MARK: Methods
-    func addUser(userType: PlaidUserType, username: String, password: String, pin: String?, institution: Institution, handler: AddUserHandler) {
+    public func addUser(userType: PlaidUserType, username: String, password: String, pin: String?, institution: Institution, handler: AddUserHandler) {
         let optionsDictionaryString = self.dictionaryToString(["list": true])
         var URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&username=\(username)&password=\(password.encodeValue)"
         
@@ -76,9 +76,9 @@ public struct Plaidster {
                 guard let token = JSONResult["access_token"] as? String else { throw JSONError.DecodingFailed }
                 guard let MFAResponse = JSONResult["mfa"] as? [[String: AnyObject]] else {
                     let unmanagedTransactions = JSONResult["transactions"] as! [[String: AnyObject]]
-                    let managedTransactions = unmanagedTransactions.map { Transaction(transaction: $0) }
+                    let managedTransactions = unmanagedTransactions.map { PlaidTransaction(transaction: $0) }
                     let unmanagedAccounts = JSONResult["accounts"] as! [[String: AnyObject]]
-                    let managedAccounts = unmanagedAccounts.map { Account(account: $0) }
+                    let managedAccounts = unmanagedAccounts.map { PlaidAccount(account: $0) }
                     handler(response: response, accessToken: token, MFAType: nil, MFA: nil, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
                     
                     return
@@ -96,7 +96,7 @@ public struct Plaidster {
         task.resume()
     }
     
-    func submitMFAResponse(accessToken: String, code: Bool?, response: String, handler: SubmitMFAHandler) {
+    public func submitMFAResponse(accessToken: String, code: Bool?, response: String, handler: SubmitMFAHandler) {
         let optionsDictionaryString = self.dictionaryToString(["send_method": response])
         var URLString = "\(baseURL)connect/step?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
 
@@ -128,9 +128,9 @@ public struct Plaidster {
                 }
                 
                 let unmanagedTransactions = JSONResult["transactions"] as! [[String: AnyObject]]
-                let managedTransactions = unmanagedTransactions.map { Transaction(transaction: $0) }
+                let managedTransactions = unmanagedTransactions.map { PlaidTransaction(transaction: $0) }
                 let unmanagedAccounts = JSONResult["accounts"] as! [[String: AnyObject]]
-                let managedAccounts = unmanagedAccounts.map { Account(account: $0) }
+                let managedAccounts = unmanagedAccounts.map { PlaidAccount(account: $0) }
                 handler(response: response, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
             } catch {
                 // Handle `throw` statements.
@@ -141,7 +141,7 @@ public struct Plaidster {
         task.resume()
     }
     
-    func fetchUserBalance(accessToken: String, handler: FetchUserBalanceHandler) {
+    public func fetchUserBalance(accessToken: String, handler: FetchUserBalanceHandler) {
         let URLString = "\(baseURL)balance?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
         let URL = NSURL(string: URLString)!
         
@@ -158,7 +158,7 @@ public struct Plaidster {
                 guard code != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
                 guard code != PlaidErrorCode.BadAccessToken else { throw PlaidError.BadAccessToken }
                 guard let unmanagedAccounts = JSONResult["accounts"] as? [[String:AnyObject]] else { throw JSONError.Empty }
-                let managedAccounts = unmanagedAccounts.map { Account(account: $0) }
+                let managedAccounts = unmanagedAccounts.map { PlaidAccount(account: $0) }
                 handler(response: response, accounts: managedAccounts, error: maybeError)
             } catch {
                 // Handle `throw` statements.
@@ -169,7 +169,7 @@ public struct Plaidster {
         task.resume()
     }
     
-    func fetchUserTransactions(accessToken: String, showPending: Bool, beginDate: String?, endDate: String?, handler: FetchUserTransactionsHandler) {
+    public func fetchUserTransactions(accessToken: String, showPending: Bool, beginDate: String?, endDate: String?, handler: FetchUserTransactionsHandler) {
         var optionsDictionary: [String: AnyObject] = ["pending": true]
         if let beginDate = beginDate { optionsDictionary["gte"] = beginDate }
         if let endDate = endDate { optionsDictionary["lte"] = endDate }
@@ -189,7 +189,7 @@ public struct Plaidster {
                 
                 guard JSONResult["code"] as? Int != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
                 guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]] else { throw JSONError.Empty }
-                let managedTransactions = unmanagedTransactions.map { Transaction(transaction: $0) }
+                let managedTransactions = unmanagedTransactions.map { PlaidTransaction(transaction: $0) }
                 handler(response: response, transactions: managedTransactions, error: maybeError)
             } catch {
                 // Handle `throw` statements.

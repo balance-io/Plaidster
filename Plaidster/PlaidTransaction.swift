@@ -1,5 +1,5 @@
 //
-//  Transaction.swift
+//  PlaidTransaction.swift
 //  Plaidster
 //
 //  Created by Willow Bumby on 2016-01-13.
@@ -8,31 +8,31 @@
 
 import Foundation
 
-public struct Transaction {
+public struct PlaidTransaction {
     
     // MARK: Properties
-    let account: String
-    let id: String
-    let amount: Double
-    let date: String
-    let name: String
-    let pending: Bool
+    public let account: String
+    public let id: String
+    public let amount: Double
+    public let date: String
+    public let name: String
+    public let pending: Bool
     
-    let address: String?
-    let city: String?
-    let state: String?
-    let zip: String?
-    let storeNumber: String?
-    let latitude: Double?
-    let longitude: Double?
+    public let address: String?
+    public let city: String?
+    public let state: String?
+    public let zip: String?
+    public let storeNumber: String?
+    public let latitude: Double?
+    public let longitude: Double?
     
-    let trxnType: String?
-    let locationScoreAddress: Double?
-    let locationScoreCity: Double?
-    let locationScoreState: Double?
-    let locationScoreZip: Double?
-    let nameScore: Double?
-    let category: NSArray?
+    public let trxnType: String?
+    public let locationScoreAddress: Double?
+    public let locationScoreCity: Double?
+    public let locationScoreState: Double?
+    public let locationScoreZip: Double?
+    public let nameScore: Double?
+    public let category: NSArray?
     
     // MARK: Initialisation
     public init(transaction: [String:AnyObject]) {

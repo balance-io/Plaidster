@@ -1,5 +1,5 @@
 //
-//  Account.swift
+//  PlaidAccount.swift
 //  Plaidster
 //
 //  Created by Willow Bumby on 2016-01-13.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Account {
+public struct PlaidAccount {
     
     // MARK: Properties
     public let id: String
@@ -22,7 +22,7 @@ public struct Account {
     public let name: String
     public let number: String
     public let officialName: String
-    public let owner: String
+    public let owner: String?
     
     public let subType: String
     public let type: String
@@ -42,7 +42,7 @@ public struct Account {
         officialName = meta["official_name"] as! String
         subType = account["subtype"] as! String
         number = meta["number"] as! String
-        owner = meta["owner"] as! String
+        owner = meta["owner"] as? String
         type = account["type"] as! String
         name = meta["name"] as! String
     }

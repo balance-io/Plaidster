@@ -6,8 +6,10 @@
 //  Copyright © 2016 Willow Bumby. All rights reserved.
 //
 
-internal typealias AddUserHandler = (response: NSURLResponse?, accessToken: String, MFAType: String?, MFA: [[String: AnyObject]]?, accounts: [Account]?, transactions: [Transaction]?, error: NSError?) -> (Void)
+import Foundation
 
-internal typealias SubmitMFAHandler = (response: NSURLResponse?, accounts: [Account]?, transactions: [Transaction]?, error: NSError?) -> (Void)
-internal typealias FetchUserBalanceHandler = (response: NSURLResponse?, accounts:[Account], error:NSError?) -> (Void)
-internal typealias FetchUserTransactionsHandler = (response: NSURLResponse?, transactions:[Transaction], error:NSError?) -> (Void)
+public typealias AddUserHandler = (response: NSURLResponse?, accessToken: String, MFAType: String?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
+
+public typealias SubmitMFAHandler = (response: NSURLResponse?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
+public typealias FetchUserBalanceHandler = (response: NSURLResponse?, accounts:[PlaidAccount], error:NSError?) -> (Void)
+public typealias FetchUserTransactionsHandler = (response: NSURLResponse?, transactions:[PlaidTransaction], error:NSError?) -> (Void)
