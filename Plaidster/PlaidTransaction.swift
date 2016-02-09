@@ -23,6 +23,7 @@ public struct PlaidTransaction {
     public let state: String?
     public let zip: String?
     public let storeNumber: String?
+    public let contact: String?
     public let latitude: Double?
     public let longitude: Double?
     
@@ -32,18 +33,19 @@ public struct PlaidTransaction {
     public let locationScoreState: Double?
     public let locationScoreZip: Double?
     public let nameScore: Double?
-    public let category: NSArray?
+    public let category: [String]?
+    public let categoryId: Int?
     
     // MARK: Initialisation
     public init(transaction: [String:AnyObject]) {
-        
         account = transaction["_account"] as! String
         id = transaction["_id"] as! String
         amount = transaction["amount"] as! Double
         date = transaction["date"] as! String
         name = transaction["name"] as! String
         pending = transaction["pending"] as! Bool
-        category = transaction["category"] as? NSArray
+        category = transaction["category"] as? [String]
+        categoryId = transaction["categoryId"] as? Int
         
         let meta = transaction["meta"] as! [String:AnyObject]
         let location = meta["location"] as? [String:AnyObject]
@@ -52,6 +54,7 @@ public struct PlaidTransaction {
         state = location?["state"] as? String
         zip = location?["zip"] as? String
         storeNumber = location?["store_number"] as? String
+        contact = meta["contact"] as? String
         
         let coordinates = location?["coordinates"] as? [String:AnyObject]
         latitude = coordinates?["lat"] as? Double

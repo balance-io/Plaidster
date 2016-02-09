@@ -199,4 +199,28 @@ public struct Plaidster {
         
         task.resume()
     }
+    
+    public func fetchCategories(handler: FetchCategoriesHandler) {
+        let URLString = "\(baseURL)categories"
+        let URL = NSURL(string: URLString)!
+        let session = NSURLSession.sharedSession()
+        
+        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
+            
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                let managedCategories = JSONResult.map { PlaidCategory(category: $0) }
+                handler(response: response, categories: managedCategories, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("fetchCategories(_;) Error: \(error)")
+            }
+        }
+        
+        task.resume()
+    }
 }

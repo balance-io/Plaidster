@@ -13,3 +13,4 @@ public typealias AddUserHandler = (response: NSURLResponse?, accessToken: String
 public typealias SubmitMFAHandler = (response: NSURLResponse?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
 public typealias FetchUserBalanceHandler = (response: NSURLResponse?, accounts:[PlaidAccount], error:NSError?) -> (Void)
 public typealias FetchUserTransactionsHandler = (response: NSURLResponse?, transactions:[PlaidTransaction], error:NSError?) -> (Void)
+public typealias FetchCategoriesHandler = (response: NSURLResponse?, categories:[PlaidCategory], error:NSError?) -> (Void)

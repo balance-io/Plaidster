@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5302912F1C6A7D8300C31CC1 /* PlaidCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */; };
+		530291301C6A828600C31CC1 /* PlaidCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */; };
 		53ABE11C1C601B9B00E0E72B /* PlaidsterOSX.h in Headers */ = {isa = PBXBuildFile; fileRef = 53ABE11B1C601B9B00E0E72B /* PlaidsterOSX.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53ABE1211C601BB400E0E72B /* Plaidster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC6791C472A4C0068EE78 /* Plaidster.swift */; };
 		53ABE1221C601BB400E0E72B /* Institution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC67B1C472CA80068EE78 /* Institution.swift */; };
@@ -44,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlaidCategory.swift; path = Helper/PlaidCategory.swift; sourceTree = "<group>"; };
 		53ABE1191C601B9B00E0E72B /* Plaidster.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plaidster.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		53ABE11B1C601B9B00E0E72B /* PlaidsterOSX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlaidsterOSX.h; sourceTree = "<group>"; };
 		53ABE11D1C601B9B00E0E72B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -163,6 +166,7 @@
 			children = (
 				72FAC6791C472A4C0068EE78 /* Plaidster.swift */,
 				721B96381C477676008158B5 /* Helper */,
+				5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */,
 				721B96321C476C1B008158B5 /* PlaidAccount.swift */,
 				721B96341C476D23008158B5 /* PlaidTransaction.swift */,
 				72218D731C4C4DCE00CFC23D /* Error */,
@@ -326,6 +330,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53ABE1211C601BB400E0E72B /* Plaidster.swift in Sources */,
+				530291301C6A828600C31CC1 /* PlaidCategory.swift in Sources */,
 				53ABE1221C601BB400E0E72B /* Institution.swift in Sources */,
 				53ABE1231C601BB400E0E72B /* HandlerTypealiases.swift in Sources */,
 				53ABE1241C601BB400E0E72B /* Plaidster+Helper.swift in Sources */,
@@ -343,6 +348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				72FAC67C1C472CA80068EE78 /* Institution.swift in Sources */,
+				5302912F1C6A7D8300C31CC1 /* PlaidCategory.swift in Sources */,
 				721B96371C47758B008158B5 /* String+Encoding.swift in Sources */,
 				72218D6A1C4C337400CFC23D /* HTTPMethod.swift in Sources */,
 				721B963A1C4776B2008158B5 /* Plaidster+Helper.swift in Sources */,

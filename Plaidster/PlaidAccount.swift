@@ -16,16 +16,16 @@ public struct PlaidAccount {
     public let user: String
     public let institutionType: String
     
-    public let available: Double
     public let current: Double
+    public let available: Double?
     
     public let name: String
     public let number: String
     public let officialName: String
     public let owner: String?
     
-    public let subType: String
     public let type: String
+    public let subType: String?
     
     // MARK: Initialisation
     public init(account: [String: AnyObject]) {
@@ -35,15 +35,15 @@ public struct PlaidAccount {
         user = account["_user"] as! String
     
         let balance = account["balance"] as! [String: AnyObject]
-        available = balance["available"] as! Double
         current = balance["current"] as! Double
+        available = balance["available"] as? Double
         
         let meta = account["meta"] as! [String: AnyObject]
         officialName = meta["official_name"] as! String
-        subType = account["subtype"] as! String
+        type = account["type"] as! String
+        subType = account["subtype"] as? String
         number = meta["number"] as! String
         owner = meta["owner"] as? String
-        type = account["type"] as! String
         name = meta["name"] as! String
     }
     
