@@ -44,19 +44,23 @@ public struct Plaidster {
     }
     
     // MARK: Methods
-    public func addUser(userType: PlaidUserType, username: String, password: String, pin: String?, institution: Institution, handler: AddUserHandler) {
+    public func addUser(userType: PlaidUserType, username: String, password: String, pin: String?, type: String, handler: AddUserHandler) {
+        let URLString = "\(baseURL)connect"
+        
+        
         let optionsDictionaryString = self.dictionaryToString(["list": true])
-        var URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&username=\(username)&password=\(password.encodeValue)"
+        var parameters = "client_id=\(clientID)&secret=\(secret)&username=\(username.URLQueryParameterEncodedValue)&password=\(password.URLQueryParameterEncodedValue)"
         
         if let pin = pin {
-            URLString += "&pin=\(pin)&type=\(institution)&\(optionsDictionaryString.encodeValue)"
+            parameters += "&pin=\(pin)&type=\(type)&\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         } else {
-            URLString += "&type=\(institution)&options=\(optionsDictionaryString.encodeValue)"
+            parameters += "&type=\(type)&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         }
         
         let URL = NSURL(string: URLString)!
         let request = NSMutableURLRequest(URL: URL)
         request.HTTPMethod = HTTPMethod.Post
+        request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
         
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
@@ -101,9 +105,9 @@ public struct Plaidster {
         var URLString = "\(baseURL)connect/step?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
 
         if true == code {
-            URLString += "&options=\(optionsDictionaryString.encodeValue)"
+            URLString += "&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         } else {
-            URLString += "&mfa=\(response.encodeValue)"
+            URLString += "&mfa=\(response.URLQueryParameterEncodedValue)"
         }
         
         let URL = NSURL(string: URLString)!
@@ -175,7 +179,7 @@ public struct Plaidster {
         if let endDate = endDate { optionsDictionary["lte"] = endDate }
         
         let optionsDictionaryString = self.dictionaryToString(optionsDictionary)
-        let URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)&\(optionsDictionaryString.encodeValue)"
+        let URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)&\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         let URL = NSURL(string: URLString)!
         let session = NSURLSession.sharedSession()
         
