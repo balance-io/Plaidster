@@ -223,4 +223,107 @@ public struct Plaidster {
         
         task.resume()
     }
+    
+    public func fetchInstitutions(handler: FetchInstitutionsHandler) {
+        let URLString = "\(baseURL)institutions"
+        let URL = NSURL(string: URLString)!
+        let session = NSURLSession.sharedSession()
+        
+        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
+            
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                let managedInstitutions = try JSONResult.map { try PlaidInstitution(institution: $0) }
+                handler(response: response, categories: managedInstitutions, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("fetchInstitutions(_;) Error: \(error)")
+            }
+        }
+        
+        task.resume()
+    }
+    
+    public func fetchLongTailInstitutions(count: Int, offset: Int, handler: FetchInstitutionsHandler) {
+        let URLString = "\(baseURL)institutions/longtail?client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
+        let URL = NSURL(string: URLString)!
+        let session = NSURLSession.sharedSession()
+        
+        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
+            
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                let managedInstitutions = try JSONResult.map { try PlaidInstitution(institution: $0) }
+                handler(response: response, categories: managedInstitutions, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("fetchLongTailInstitutions(_;) Error: \(error)")
+            }
+        }
+        
+        task.resume()
+    }
+    
+    public func searchInstitutions(query: String, product: String?, handler: SearchInstitutionsHandler) -> NSURLSessionDataTask {
+        var URLString = "\(baseURL)institutions/search?q=\(query.URLQueryParameterEncodedValue)"
+        if product != nil {
+            URLString += "p=\(product)"
+        }
+        let URL = NSURL(string: URLString)!
+        let session = NSURLSession.sharedSession()
+        
+        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
+            
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                let managedInstitutions = try JSONResult.map { try PlaidSearchInstitution(institution: $0) }
+                handler(response: response, categories: managedInstitutions, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("searchLongTailInstitutions(_;) Error: \(error)")
+            }
+        }
+        
+        task.resume()
+        
+        return task
+    }
+    
+    public func searchInstitutions(id: String, handler: SearchInstitutionsHandler) -> NSURLSessionDataTask {
+        let URLString = "\(baseURL)institutions/search?id=\(id)"
+        let URL = NSURL(string: URLString)!
+        let session = NSURLSession.sharedSession()
+        
+        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+            guard let data = maybeData, response = maybeResponse where maybeError == nil else { return }
+            
+            do {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                    throw JSONError.DecodingFailed
+                }
+                
+                let managedInstitutions = try JSONResult.map { try PlaidSearchInstitution(institution: $0) }
+                handler(response: response, categories: managedInstitutions, error: maybeError)
+            } catch {
+                // Handle `throw` statements.
+                debugPrint("searchLongTailInstitutions(_;) Error: \(error)")
+            }
+        }
+        
+        task.resume()
+        
+        return task
+    }
 }

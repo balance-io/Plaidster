@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		5302912F1C6A7D8300C31CC1 /* PlaidCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */; };
 		530291301C6A828600C31CC1 /* PlaidCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */; };
+		539C8EA51C741A74005C72BC /* PlaidInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C8EA41C741A74005C72BC /* PlaidInstitution.swift */; };
+		539C8EA61C741C53005C72BC /* PlaidInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C8EA41C741A74005C72BC /* PlaidInstitution.swift */; };
+		539C8EA81C74FE15005C72BC /* PlaidSearchInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C8EA71C74FE15005C72BC /* PlaidSearchInstitution.swift */; };
+		539C8EA91C74FE15005C72BC /* PlaidSearchInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C8EA71C74FE15005C72BC /* PlaidSearchInstitution.swift */; };
 		53ABE11C1C601B9B00E0E72B /* PlaidsterOSX.h in Headers */ = {isa = PBXBuildFile; fileRef = 53ABE11B1C601B9B00E0E72B /* PlaidsterOSX.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		53ABE1211C601BB400E0E72B /* Plaidster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC6791C472A4C0068EE78 /* Plaidster.swift */; };
 		53ABE1221C601BB400E0E72B /* Institution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72FAC67B1C472CA80068EE78 /* Institution.swift */; };
@@ -47,6 +51,8 @@
 
 /* Begin PBXFileReference section */
 		5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlaidCategory.swift; path = Helper/PlaidCategory.swift; sourceTree = "<group>"; };
+		539C8EA41C741A74005C72BC /* PlaidInstitution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidInstitution.swift; sourceTree = "<group>"; };
+		539C8EA71C74FE15005C72BC /* PlaidSearchInstitution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidSearchInstitution.swift; sourceTree = "<group>"; };
 		53ABE1191C601B9B00E0E72B /* Plaidster.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plaidster.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		53ABE11B1C601B9B00E0E72B /* PlaidsterOSX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlaidsterOSX.h; sourceTree = "<group>"; };
 		53ABE11D1C601B9B00E0E72B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -169,6 +175,8 @@
 				5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */,
 				721B96321C476C1B008158B5 /* PlaidAccount.swift */,
 				721B96341C476D23008158B5 /* PlaidTransaction.swift */,
+				539C8EA41C741A74005C72BC /* PlaidInstitution.swift */,
+				539C8EA71C74FE15005C72BC /* PlaidSearchInstitution.swift */,
 				72218D731C4C4DCE00CFC23D /* Error */,
 				72218D6D1C4C411B00CFC23D /* Supporting */,
 			);
@@ -337,7 +345,9 @@
 				53ABE1251C601BB400E0E72B /* PlaidAccount.swift in Sources */,
 				53ABE1261C601BB400E0E72B /* PlaidTransaction.swift in Sources */,
 				53ABE1271C601BB400E0E72B /* PlaidError.swift in Sources */,
+				539C8EA91C74FE15005C72BC /* PlaidSearchInstitution.swift in Sources */,
 				53ABE1281C601BB400E0E72B /* PlaidsterError.swift in Sources */,
+				539C8EA61C741C53005C72BC /* PlaidInstitution.swift in Sources */,
 				53ABE1291C601BB400E0E72B /* HTTPMethod.swift in Sources */,
 				53ABE12A1C601BB400E0E72B /* String+Encoding.swift in Sources */,
 			);
@@ -355,7 +365,9 @@
 				72218D711C4C439B00CFC23D /* HandlerTypealiases.swift in Sources */,
 				72FAC67A1C472A4C0068EE78 /* Plaidster.swift in Sources */,
 				72218D6F1C4C412600CFC23D /* PlaidsterError.swift in Sources */,
+				539C8EA81C74FE15005C72BC /* PlaidSearchInstitution.swift in Sources */,
 				721B96351C476D23008158B5 /* PlaidTransaction.swift in Sources */,
+				539C8EA51C741A74005C72BC /* PlaidInstitution.swift in Sources */,
 				721B96331C476C1B008158B5 /* PlaidAccount.swift in Sources */,
 				72218D6C1C4C384800CFC23D /* PlaidError.swift in Sources */,
 			);
