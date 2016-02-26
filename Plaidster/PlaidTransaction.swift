@@ -71,6 +71,5 @@ public struct PlaidTransaction {
         locationScoreCity = locationScore?["city"] as? Double
         locationScoreState = locationScore?["state"] as? Double
         locationScoreZip = locationScore?["zip"] as? Double
-
     }
 }

@@ -21,5 +21,4 @@ public struct PlaidCategory {
         hierarchy = category["hierarchy"] as! [String]
         type = category["type"] as! String
     }
-    
 }

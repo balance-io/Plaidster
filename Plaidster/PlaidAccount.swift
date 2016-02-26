@@ -18,10 +18,11 @@ public struct PlaidAccount {
     
     public let current: Double
     public let available: Double?
+    public let limit: Double?
     
     public let name: String
     public let number: String
-    public let officialName: String
+    public let officialName: String?
     public let owner: String?
     
     public let type: String
@@ -39,12 +40,12 @@ public struct PlaidAccount {
         available = balance["available"] as? Double
         
         let meta = account["meta"] as! [String: AnyObject]
-        officialName = meta["official_name"] as! String
+        officialName = meta["official_name"] as? String
         type = account["type"] as! String
         subType = account["subtype"] as? String
         number = meta["number"] as! String
         owner = meta["owner"] as? String
         name = meta["name"] as! String
+        limit = meta["limit"] as? Double
     }
-    
 }
