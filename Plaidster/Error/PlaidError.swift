@@ -8,15 +8,48 @@
 
 import Foundation
 
-internal enum PlaidError: ErrorType {
+public enum PlaidError: ErrorType, PlaidErrorConvertible {
     case BadAccessToken
-    case CredentialsMissing(String)
+    case MissingCredentials(String)
     case InvalidCredentials(String)
     case InvalidMFA(String)
     case InstitutionNotAvailable
+    
+    public func errorDomain() -> String {
+        return "PlaidsterErrorDomain"
+    }
+    
+    public func errorCode() -> Int {
+        switch self {
+        case .BadAccessToken:           return PlaidErrorCode.BadAccessToken
+        case .MissingCredentials:       return PlaidErrorCode.MissingCredentials
+        case .InvalidCredentials:       return PlaidErrorCode.InvalidCredentials
+        case .InvalidMFA:               return PlaidErrorCode.InvalidMFA
+        case .InstitutionNotAvailable:  return PlaidErrorCode.InstitutionNotAvailable
+        }
+    }
+    
+    public func errorDescription() -> String {
+        switch self {
+        case .BadAccessToken:
+            return "Bad access token"
+        case .MissingCredentials(let message):
+            return "Missing credentials: \(message)"
+        case .InvalidCredentials(let message):
+            return "Invalid credentials: \(message)"
+        case .InvalidMFA(let message):
+            return "Invalid MFA response: \(message)"
+        case .InstitutionNotAvailable:
+            return "Institution not available"
+        }
+    }
+    
+    public func errorUserInfo() -> Dictionary<String,String>? {
+        return [NSLocalizedDescriptionKey: errorDescription()]
+    }
 }
 
-internal struct PlaidErrorCode {
+public struct PlaidErrorCode {
     static let MissingAccessToken = 1000
     static let MissingType = 1001
     static let DisallowedAccessToken = 1003

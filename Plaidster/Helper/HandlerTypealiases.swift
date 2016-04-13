@@ -8,7 +8,8 @@
 
 import Foundation
 
-public typealias AddUserHandler = (response: NSURLResponse?, accessToken: String, MFAType: String?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
+// TODO: Look into removing response parameters as they should not be needed
+public typealias AddUserHandler = (response: NSURLResponse?, accessToken: String?, MFAType: String?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
 
 public typealias SubmitMFAHandler = (response: NSURLResponse?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
 public typealias FetchUserBalanceHandler = (response: NSURLResponse?, accounts:[PlaidAccount], error:NSError?) -> (Void)

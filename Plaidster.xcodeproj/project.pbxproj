@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5302912F1C6A7D8300C31CC1 /* PlaidCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */; };
 		530291301C6A828600C31CC1 /* PlaidCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */; };
+		53217FD71CBEE671000B32A3 /* PlaidErrorConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53217FD61CBEE671000B32A3 /* PlaidErrorConvertible.swift */; };
+		53217FD81CBEE671000B32A3 /* PlaidErrorConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53217FD61CBEE671000B32A3 /* PlaidErrorConvertible.swift */; };
 		539C8EA51C741A74005C72BC /* PlaidInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C8EA41C741A74005C72BC /* PlaidInstitution.swift */; };
 		539C8EA61C741C53005C72BC /* PlaidInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C8EA41C741A74005C72BC /* PlaidInstitution.swift */; };
 		539C8EA81C74FE15005C72BC /* PlaidSearchInstitution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 539C8EA71C74FE15005C72BC /* PlaidSearchInstitution.swift */; };
@@ -51,6 +53,7 @@
 
 /* Begin PBXFileReference section */
 		5302912E1C6A7D8300C31CC1 /* PlaidCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlaidCategory.swift; path = Helper/PlaidCategory.swift; sourceTree = "<group>"; };
+		53217FD61CBEE671000B32A3 /* PlaidErrorConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidErrorConvertible.swift; sourceTree = "<group>"; };
 		539C8EA41C741A74005C72BC /* PlaidInstitution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidInstitution.swift; sourceTree = "<group>"; };
 		539C8EA71C74FE15005C72BC /* PlaidSearchInstitution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaidSearchInstitution.swift; sourceTree = "<group>"; };
 		53ABE1191C601B9B00E0E72B /* Plaidster.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plaidster.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -132,6 +135,7 @@
 		72218D731C4C4DCE00CFC23D /* Error */ = {
 			isa = PBXGroup;
 			children = (
+				53217FD61CBEE671000B32A3 /* PlaidErrorConvertible.swift */,
 				72218D6B1C4C384800CFC23D /* PlaidError.swift */,
 				72218D6E1C4C412600CFC23D /* PlaidsterError.swift */,
 			);
@@ -344,6 +348,7 @@
 				53ABE1241C601BB400E0E72B /* Plaidster+Helper.swift in Sources */,
 				53ABE1251C601BB400E0E72B /* PlaidAccount.swift in Sources */,
 				53ABE1261C601BB400E0E72B /* PlaidTransaction.swift in Sources */,
+				53217FD81CBEE671000B32A3 /* PlaidErrorConvertible.swift in Sources */,
 				53ABE1271C601BB400E0E72B /* PlaidError.swift in Sources */,
 				539C8EA91C74FE15005C72BC /* PlaidSearchInstitution.swift in Sources */,
 				53ABE1281C601BB400E0E72B /* PlaidsterError.swift in Sources */,
@@ -364,6 +369,7 @@
 				721B963A1C4776B2008158B5 /* Plaidster+Helper.swift in Sources */,
 				72218D711C4C439B00CFC23D /* HandlerTypealiases.swift in Sources */,
 				72FAC67A1C472A4C0068EE78 /* Plaidster.swift in Sources */,
+				53217FD71CBEE671000B32A3 /* PlaidErrorConvertible.swift in Sources */,
 				72218D6F1C4C412600CFC23D /* PlaidsterError.swift in Sources */,
 				539C8EA81C74FE15005C72BC /* PlaidSearchInstitution.swift in Sources */,
 				721B96351C476D23008158B5 /* PlaidTransaction.swift in Sources */,
