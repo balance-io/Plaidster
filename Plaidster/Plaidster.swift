@@ -72,7 +72,7 @@ public struct Plaidster {
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -93,16 +93,16 @@ public struct Plaidster {
                     let managedTransactions = unmanagedTransactions.map { PlaidTransaction(transaction: $0) }
                     let unmanagedAccounts = JSONResult["accounts"] as! [[String: AnyObject]]
                     let managedAccounts = unmanagedAccounts.map { PlaidAccount(account: $0) }
-                    handler(response: response, accessToken: token, MFAType: nil, MFA: nil, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
+                    handler(accessToken: token, MFAType: nil, MFA: nil, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
                     
                     return
                 }
                 
                 var type: String?
                 if let MFAType = JSONResult["type"] as? String { type = MFAType }
-                handler(response: response, accessToken: token, MFAType: type, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
+                handler(accessToken: token, MFAType: type, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
             } catch {
-                handler(response: maybeResponse, accessToken: nil, MFAType: type, MFA: nil, accounts: nil, transactions: nil, error: cocoaErrorFromException(error))
+                handler(accessToken: nil, MFAType: type, MFA: nil, accounts: nil, transactions: nil, error: cocoaErrorFromException(error))
             }
         }
         
@@ -126,7 +126,7 @@ public struct Plaidster {
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -146,9 +146,9 @@ public struct Plaidster {
                 let managedTransactions = unmanagedTransactions.map { PlaidTransaction(transaction: $0) }
                 let unmanagedAccounts = JSONResult["accounts"] as! [[String: AnyObject]]
                 let managedAccounts = unmanagedAccounts.map { PlaidAccount(account: $0) }
-                handler(response: response, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
+                handler(accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
             } catch {
-                handler(response: maybeResponse, accounts: nil, transactions: nil, error: cocoaErrorFromException(error))
+                handler(accounts: nil, transactions: nil, error: cocoaErrorFromException(error))
             }
         }
         
@@ -162,7 +162,7 @@ public struct Plaidster {
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -175,9 +175,9 @@ public struct Plaidster {
                 guard code != PlaidErrorCode.BadAccessToken else { throw PlaidError.BadAccessToken }
                 guard let unmanagedAccounts = JSONResult["accounts"] as? [[String:AnyObject]] else { throw PlaidsterError.JSONEmpty }
                 let managedAccounts = unmanagedAccounts.map { PlaidAccount(account: $0) }
-                handler(response: response, accounts: managedAccounts, error: maybeError)
+                handler(accounts: managedAccounts, error: maybeError)
             } catch {
-                handler(response: maybeResponse, accounts: [PlaidAccount](), error: cocoaErrorFromException(error))
+                handler(accounts: [PlaidAccount](), error: cocoaErrorFromException(error))
             }
         }
         
@@ -196,7 +196,7 @@ public struct Plaidster {
         
         let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -207,9 +207,9 @@ public struct Plaidster {
                 guard JSONResult["code"] as? Int != PlaidErrorCode.InstitutionDown else { throw PlaidError.InstitutionNotAvailable }
                 guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]] else { throw PlaidsterError.JSONEmpty }
                 let managedTransactions = unmanagedTransactions.map { PlaidTransaction(transaction: $0) }
-                handler(response: response, transactions: managedTransactions, error: maybeError)
+                handler(transactions: managedTransactions, error: maybeError)
             } catch {
-                handler(response: maybeResponse, transactions: [PlaidTransaction](), error: cocoaErrorFromException(error))
+                handler(transactions: [PlaidTransaction](), error: cocoaErrorFromException(error))
             }
         }
         
@@ -223,7 +223,7 @@ public struct Plaidster {
         
         let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -232,9 +232,9 @@ public struct Plaidster {
                 }
                 
                 let managedCategories = JSONResult.map { PlaidCategory(category: $0) }
-                handler(response: response, categories: managedCategories, error: maybeError)
+                handler(categories: managedCategories, error: maybeError)
             } catch {
-                handler(response: maybeResponse, categories: [PlaidCategory](), error: cocoaErrorFromException(error))
+                handler(categories: [PlaidCategory](), error: cocoaErrorFromException(error))
             }
         }
         
@@ -248,7 +248,7 @@ public struct Plaidster {
         
         let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -257,9 +257,9 @@ public struct Plaidster {
                 }
                 
                 let managedInstitutions = try JSONResult.map { try PlaidInstitution(institution: $0) }
-                handler(response: response, categories: managedInstitutions, error: maybeError)
+                handler(categories: managedInstitutions, error: maybeError)
             } catch {
-                handler(response: maybeResponse, categories: [PlaidInstitution](), error: cocoaErrorFromException(error))
+                handler(categories: [PlaidInstitution](), error: cocoaErrorFromException(error))
             }
         }
         
@@ -273,7 +273,7 @@ public struct Plaidster {
         
         let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -282,9 +282,9 @@ public struct Plaidster {
                 }
                 
                 let managedInstitutions = try JSONResult.map { try PlaidInstitution(institution: $0) }
-                handler(response: response, categories: managedInstitutions, error: maybeError)
+                handler(categories: managedInstitutions, error: maybeError)
             } catch {
-                handler(response: maybeResponse, categories: [PlaidInstitution](), error: cocoaErrorFromException(error))
+                handler(categories: [PlaidInstitution](), error: cocoaErrorFromException(error))
             }
         }
         
@@ -301,10 +301,10 @@ public struct Plaidster {
         
         let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     // For whatever reason, this API returns empty on success when no results are returned,
                     // so in this case it's not an error. Just return an empty set.
-                    handler(response: maybeResponse, categories: [PlaidSearchInstitution](), error: nil)
+                    handler(categories: [PlaidSearchInstitution](), error: nil)
                     return
                 }
                 
@@ -313,9 +313,9 @@ public struct Plaidster {
                 }
                 
                 let managedInstitutions = try JSONResult.map { try PlaidSearchInstitution(institution: $0) }
-                handler(response: response, categories: managedInstitutions, error: maybeError)
+                handler(categories: managedInstitutions, error: maybeError)
             } catch {
-                handler(response: maybeResponse, categories: [PlaidSearchInstitution](), error: cocoaErrorFromException(error))
+                handler(categories: [PlaidSearchInstitution](), error: cocoaErrorFromException(error))
             }
         }
         
@@ -331,7 +331,7 @@ public struct Plaidster {
         
         let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
             do {
-                guard let data = maybeData, response = maybeResponse where maybeError == nil else {
+                guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty
                 }
                 
@@ -340,9 +340,9 @@ public struct Plaidster {
                 }
                 
                 let managedInstitutions = try JSONResult.map { try PlaidSearchInstitution(institution: $0) }
-                handler(response: response, categories: managedInstitutions, error: maybeError)
+                handler(categories: managedInstitutions, error: maybeError)
             } catch {
-                handler(response: maybeResponse, categories: [PlaidSearchInstitution](), error: cocoaErrorFromException(error))
+                handler(categories: [PlaidSearchInstitution](), error: cocoaErrorFromException(error))
             }
         }
         
