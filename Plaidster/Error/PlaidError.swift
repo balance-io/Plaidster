@@ -14,6 +14,10 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
     case InvalidCredentials(String)
     case InvalidMFA(String)
     case InstitutionNotAvailable
+    case ItemNotFound
+    
+    // Used for not yet implemented values
+    case GenericError(Int, String?)
     
     public func errorDomain() -> String {
         return "PlaidsterErrorDomain"
@@ -21,11 +25,14 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
     
     public func errorCode() -> Int {
         switch self {
-        case .BadAccessToken:           return PlaidErrorCode.BadAccessToken
-        case .MissingCredentials:       return PlaidErrorCode.MissingCredentials
-        case .InvalidCredentials:       return PlaidErrorCode.InvalidCredentials
-        case .InvalidMFA:               return PlaidErrorCode.InvalidMFA
-        case .InstitutionNotAvailable:  return PlaidErrorCode.InstitutionNotAvailable
+        case .BadAccessToken:               return PlaidErrorCode.BadAccessToken
+        case .MissingCredentials:           return PlaidErrorCode.MissingCredentials
+        case .InvalidCredentials:           return PlaidErrorCode.InvalidCredentials
+        case .InvalidMFA:                   return PlaidErrorCode.InvalidMFA
+        case .InstitutionNotAvailable:      return PlaidErrorCode.InstitutionNotAvailable
+        case .ItemNotFound:                 return PlaidErrorCode.ItemNotFound
+        
+        case .GenericError(let code, _):    return code
         }
     }
     
@@ -41,6 +48,11 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
             return "Invalid MFA response: \(message)"
         case .InstitutionNotAvailable:
             return "Institution not available"
+        case .ItemNotFound:
+            return "Item not found"
+            
+        case .GenericError(_, let message):
+            return message ?? "Unknown error"
         }
     }
     
@@ -50,59 +62,59 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
 }
 
 public struct PlaidErrorCode {
-    static let MissingAccessToken = 1000
-    static let MissingType = 1001
-    static let DisallowedAccessToken = 1003
-    static let UnsupportedAccessToken = 1008
-    static let InvalidOptionsFormat = 1004
-    static let MissingCredentials = 1005
-    static let InvalidCredentialsFormat = 1006
-    static let UpdateRequired = 1007
-    static let InvalidContentType = 1009
-    static let MissingClientID = 1100
-    static let MissingSecret = 1101
-    static let InvalidSecretOrClientID = 1102
-    static let UnauthorizedProduct1104 = 1104
-    static let BadAccessToken = 1105
-    static let BadPublicToken = 1106
-    static let MissingPublicToken = 1107
-    static let InvalidType1108 = 1108
-    static let UnauthorizedProduct1109 = 1109
-    static let ProductNotEnabled = 1110
-    static let InvalidUpgrade = 1111
-    static let AdditionLimitExceeded = 1112
-    static let RateLimitExceeded = 1113
-    static let UnauthorizedEnvironment = 1114
-    static let InvalidCredentials = 1200
-    static let InvalidUsername = 1201
-    static let InvalidPassword = 1202
-    static let InvalidMFA = 1203
-    static let InvalidSendMethod = 1204
-    static let AccountLocked = 1205
-    static let AccountNotSetup = 1206
-    static let CountryNotSupported = 1207
-    static let MFANotSupported = 1208
-    static let InvalidPin = 1209
-    static let AccountNotSupported = 1210
-    static let BOFAAccountNotSupported = 1211
-    static let NoAccounts = 1212
-    static let InvalidPatchUsername = 1213
-    static let MFAReset = 1215
-    static let MFANotRequired = 1218
-    static let InstitutionNotAvailable = 1300
-    static let UnableToFindInstitution = 1301
-    static let InstitutionNotResponding = 1302
-    static let InstitutionDown = 1303
-    static let UnableToFindCategory = 1501
-    static let TypeRequired = 1502
-    static let InvalidType1503 = 1503
-    static let InvalidDate = 1507
-    static let ProductNotFound = 1601
-    static let UserNotFound = 1605
-    static let AccountNotFound = 1606
-    static let ItemNotFound = 1610
-    static let ExtractorError = 1700
-    static let ExtractorErrorRetry = 1701
-    static let PlaidError = 1702
-    static let PlannedMaintenance = 1800
+    public static let MissingAccessToken = 1000
+    public static let MissingType = 1001
+    public static let DisallowedAccessToken = 1003
+    public static let UnsupportedAccessToken = 1008
+    public static let InvalidOptionsFormat = 1004
+    public static let MissingCredentials = 1005
+    public static let InvalidCredentialsFormat = 1006
+    public static let UpdateRequired = 1007
+    public static let InvalidContentType = 1009
+    public static let MissingClientID = 1100
+    public static let MissingSecret = 1101
+    public static let InvalidSecretOrClientID = 1102
+    public static let UnauthorizedProduct1104 = 1104
+    public static let BadAccessToken = 1105
+    public static let BadPublicToken = 1106
+    public static let MissingPublicToken = 1107
+    public static let InvalidType1108 = 1108
+    public static let UnauthorizedProduct1109 = 1109
+    public static let ProductNotEnabled = 1110
+    public static let InvalidUpgrade = 1111
+    public static let AdditionLimitExceeded = 1112
+    public static let RateLimitExceeded = 1113
+    public static let UnauthorizedEnvironment = 1114
+    public static let InvalidCredentials = 1200
+    public static let InvalidUsername = 1201
+    public static let InvalidPassword = 1202
+    public static let InvalidMFA = 1203
+    public static let InvalidSendMethod = 1204
+    public static let AccountLocked = 1205
+    public static let AccountNotSetup = 1206
+    public static let CountryNotSupported = 1207
+    public static let MFANotSupported = 1208
+    public static let InvalidPin = 1209
+    public static let AccountNotSupported = 1210
+    public static let BOFAAccountNotSupported = 1211
+    public static let NoAccounts = 1212
+    public static let InvalidPatchUsername = 1213
+    public static let MFAReset = 1215
+    public static let MFANotRequired = 1218
+    public static let InstitutionNotAvailable = 1300
+    public static let UnableToFindInstitution = 1301
+    public static let InstitutionNotResponding = 1302
+    public static let InstitutionDown = 1303
+    public static let UnableToFindCategory = 1501
+    public static let TypeRequired = 1502
+    public static let InvalidType1503 = 1503
+    public static let InvalidDate = 1507
+    public static let ProductNotFound = 1601
+    public static let UserNotFound = 1605
+    public static let AccountNotFound = 1606
+    public static let ItemNotFound = 1610
+    public static let ExtractorError = 1700
+    public static let ExtractorErrorRetry = 1701
+    public static let PlaidError = 1702
+    public static let PlannedMaintenance = 1800
 }
