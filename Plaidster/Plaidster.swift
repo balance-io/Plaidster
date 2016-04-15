@@ -109,6 +109,47 @@ public struct Plaidster {
         task.resume()
     }
     
+    public func removeUser(accessToken: String, handler: RemoveUserHandler) {
+        let URLString = "\(baseURL)connect"
+        let parameters = "client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
+        
+        let URL = NSURL(string: URLString)!
+        let request = NSMutableURLRequest(URL: URL)
+        request.HTTPMethod = HTTPMethod.Delete
+        request.allHTTPHeaderFields = ["Content-Type": "application/x-www-form-urlencoded"]
+        request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
+        
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+            do {
+                guard let data = maybeData where maybeError == nil else {
+                    throw PlaidsterError.JSONEmpty
+                }
+                
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                    throw PlaidsterError.JSONDecodingFailed
+                }
+                
+                let code = JSONResult["code"] as? Int
+                let message = JSONResult["message"] as? String
+                
+                guard code == nil else {
+                    if code == PlaidErrorCode.ItemNotFound {
+                        throw PlaidError.ItemNotFound
+                    } else {
+                        throw PlaidError.GenericError(code!, message)
+                    }
+                }
+                
+                handler(message: message, error: maybeError)
+            } catch {
+                handler(message: nil, error: cocoaErrorFromException(error))
+            }
+        }
+        
+        task.resume()
+    }
+    
     public func submitMFAResponse(accessToken: String, code: Bool?, response: String, handler: SubmitMFAHandler) {
         let optionsDictionaryString = self.dictionaryToString(["send_method": response])
         var URLString = "\(baseURL)connect/step?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"

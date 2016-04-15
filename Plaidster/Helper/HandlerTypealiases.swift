@@ -9,6 +9,7 @@
 import Foundation
 
 public typealias AddUserHandler = (accessToken: String?, MFAType: String?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
+public typealias RemoveUserHandler = (message: String?, error: NSError?) -> (Void)
 
 public typealias SubmitMFAHandler = (accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
 public typealias FetchUserBalanceHandler = (accounts: [PlaidAccount], error:NSError?) -> (Void)
