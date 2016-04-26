@@ -21,7 +21,7 @@ public struct PlaidAccount {
     public let limit: Double?
     
     public let name: String
-    public let number: String
+    public let number: String?
     public let officialName: String?
     public let owner: String?
     
@@ -43,7 +43,7 @@ public struct PlaidAccount {
         officialName = meta["official_name"] as? String
         type = account["type"] as! String
         subType = account["subtype"] as? String
-        number = meta["number"] as! String
+        number = meta["number"] as? String
         owner = meta["owner"] as? String
         name = meta["name"] as! String
         limit = meta["limit"] as? Double
