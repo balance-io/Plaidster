@@ -11,7 +11,7 @@ import Foundation
 public enum PlaidsterError: ErrorType, PlaidErrorConvertible {
     case JSONEncodingFailed
     case JSONDecodingFailed
-    case JSONEmpty
+    case JSONEmpty(String?)
     case UnknownException(exception: ErrorType)
     
     public func errorDomain() -> String {
@@ -33,8 +33,12 @@ public enum PlaidsterError: ErrorType, PlaidErrorConvertible {
             return "JSON encoding failed"
         case .JSONDecodingFailed:
             return "JSON decoding failed"
-        case .JSONEmpty:
-            return "JSON response empty"
+        case .JSONEmpty(let message):
+            if message == nil {
+                return "JSON response empty"
+            } else {
+                return "JSON response empty: \(message)"
+            }
         case .UnknownException(let exception):
             return "Unknown exception: \(exception)"
         }

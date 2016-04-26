@@ -14,6 +14,7 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
     case InvalidCredentials(String)
     case InvalidMFA(String)
     case InstitutionNotAvailable
+    case InstitutionDown
     case ItemNotFound
     
     // Used for not yet implemented values
@@ -30,6 +31,7 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
         case .InvalidCredentials:           return PlaidErrorCode.InvalidCredentials
         case .InvalidMFA:                   return PlaidErrorCode.InvalidMFA
         case .InstitutionNotAvailable:      return PlaidErrorCode.InstitutionNotAvailable
+        case .InstitutionDown:              return PlaidErrorCode.InstitutionDown
         case .ItemNotFound:                 return PlaidErrorCode.ItemNotFound
         
         case .GenericError(let code, _):    return code
@@ -48,6 +50,8 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
             return "Invalid MFA response: \(message)"
         case .InstitutionNotAvailable:
             return "Institution not available"
+        case .InstitutionDown:
+            return "Institution down"
         case .ItemNotFound:
             return "Item not found"
             
