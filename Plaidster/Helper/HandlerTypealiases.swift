@@ -8,12 +8,12 @@
 
 import Foundation
 
-public typealias AddUserHandler = (accessToken: String?, MFAType: String?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
+public typealias AddUserHandler = (accessToken: String?, MFAType: PlaidMFAType?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
 public typealias RemoveUserHandler = (message: String?, error: NSError?) -> (Void)
 
-public typealias SubmitMFAHandler = (accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
+public typealias SubmitMFAHandler = (MFAType: PlaidMFAType?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
 public typealias FetchUserBalanceHandler = (accounts: [PlaidAccount], error:NSError?) -> (Void)
 public typealias FetchUserTransactionsHandler = (transactions: [PlaidTransaction], error:NSError?) -> (Void)
 public typealias FetchCategoriesHandler = (categories: [PlaidCategory], error:NSError?) -> (Void)
-public typealias FetchInstitutionsHandler = (categories: [PlaidInstitution], error:NSError?) -> (Void)
-public typealias SearchInstitutionsHandler = (categories: [PlaidSearchInstitution], error:NSError?) -> (Void)
+public typealias FetchInstitutionsHandler = (institutions: [PlaidInstitution], error:NSError?) -> (Void)
+public typealias SearchInstitutionsHandler = (institutions: [PlaidSearchInstitution], error:NSError?) -> (Void)
