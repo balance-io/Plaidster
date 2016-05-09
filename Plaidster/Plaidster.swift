@@ -61,6 +61,9 @@ public struct Plaidster {
     let secret: String
     let baseURL: String
     
+    // Set to true to debugPrint all raw JSON responses from Plaid
+    public var printRawResponses = false
+    
     // MARK: Initialisation
     public init(clientID: String, secret: String, mode: PlaidEnvironment) {
         self.clientID = clientID
@@ -75,6 +78,15 @@ public struct Plaidster {
     }
     
     // MARK: Methods
+    private func printRawResponse(data: NSData, function: String = #function) {
+        if printRawResponses {
+            let response = NSString(data: data, encoding: NSUTF8StringEncoding) ?? "Failed to convert data to string"
+            
+            // Using NSLog so the time is included
+            NSLog("\(function): \(response)")
+        }
+    }
+    
     public func addUser(username username: String, password: String, pin: String?, type: String, handler: AddUserHandler) {
         let URLString = "\(baseURL)connect"
         
@@ -96,6 +108,9 @@ public struct Plaidster {
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
+                
+                // Print raw response if option enabled
+                self.printRawResponse(data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
@@ -172,6 +187,9 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
+                // Print raw response if option enabled
+                self.printRawResponse(data)
+                
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
@@ -234,6 +252,9 @@ public struct Plaidster {
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
+                
+                // Print raw response if option enabled
+                self.printRawResponse(data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
@@ -300,6 +321,9 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
+                // Print raw response if option enabled
+                self.printRawResponse(data)
+                
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
@@ -352,6 +376,9 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
+                // Print raw response if option enabled
+                self.printRawResponse(data)
+                
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
@@ -391,6 +418,9 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
+                // Print raw response if option enabled
+                self.printRawResponse(data)
+                
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
@@ -422,6 +452,9 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
+                // Print raw response if option enabled
+                self.printRawResponse(data)
+                
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
@@ -450,6 +483,9 @@ public struct Plaidster {
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
+                
+                // Print raw response if option enabled
+                self.printRawResponse(data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
@@ -487,6 +523,9 @@ public struct Plaidster {
                     return
                 }
                 
+                // Print raw response if option enabled
+                self.printRawResponse(data)
+                
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
@@ -520,6 +559,9 @@ public struct Plaidster {
                     handler(institutions: [PlaidSearchInstitution](), error: nil)
                     return
                 }
+                
+                // Print raw response if option enabled
+                self.printRawResponse(data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
