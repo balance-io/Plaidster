@@ -57,12 +57,13 @@ public struct Plaidster {
     private static let ProductionBaseURL = "https://api.plaid.com/"
     
     // MARK: Properties
-    let clientID: String
-    let secret: String
-    let baseURL: String
+    private let session = NSURLSession.sharedSession()
+    private let clientID: String
+    private let secret: String
+    private let baseURL: String
     
     // Set to true to debugPrint all raw JSON responses from Plaid
-    public var printRawResponses = false
+    public var printRawConnections = false
     
     // MARK: Initialisation
     public init(clientID: String, secret: String, mode: PlaidEnvironment) {
@@ -78,12 +79,29 @@ public struct Plaidster {
     }
     
     // MARK: Methods
-    private func printRawResponse(data: NSData, function: String = #function) {
-        if printRawResponses {
-            let response = NSString(data: data, encoding: NSUTF8StringEncoding) ?? "Failed to convert data to string"
+    static private var printRequestDateFormatterToken: dispatch_once_t = 0
+    static private let printRequestDateFormatter = NSDateFormatter()
+    private func printRequest(request: NSURLRequest, responseData: NSData, function: String = #function) {
+        dispatch_once(&Plaidster.printRequestDateFormatterToken) {
+            Plaidster.printRequestDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        }
+        
+        if printRawConnections {
+            let url = request.URL?.absoluteString ?? "Failed to decode URL"
+            var body = ""
+            if let HTTPBody = request.HTTPBody {
+                if let HTTPBodyString = NSString(data: HTTPBody, encoding: NSUTF8StringEncoding) {
+                    body = HTTPBodyString as String
+                }
+            }
+            let response = NSString(data: responseData, encoding: NSUTF8StringEncoding) ?? "Failed to convert response data to string"
             
-            // Using NSLog so the time is included
-            NSLog("\(function): \(response)")
+            let date = Plaidster.printRequestDateFormatter.stringFromDate(NSDate())
+            let logMessage = "\(function):\n" +
+                             "URL: \(url)\n" +
+                             "Body: \(body)\n" +
+                             "Response: \(response)"
+            print("\(date) \(logMessage)")
         }
     }
     
@@ -101,7 +119,6 @@ public struct Plaidster {
         request.HTTPMethod = HTTPMethod.Post
         request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
         
-        let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
@@ -109,8 +126,8 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
@@ -179,7 +196,6 @@ public struct Plaidster {
         request.allHTTPHeaderFields = ["Content-Type": "application/x-www-form-urlencoded"]
         request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
         
-        let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
@@ -187,8 +203,8 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
@@ -245,7 +261,6 @@ public struct Plaidster {
         request.HTTPMethod = HTTPMethod.Post
         request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
         
-        let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
@@ -253,8 +268,8 @@ public struct Plaidster {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
@@ -312,17 +327,17 @@ public struct Plaidster {
     public func fetchUserBalance(accessToken: String, handler: FetchUserBalanceHandler) {
         let URLString = "\(baseURL)balance?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
         let URL = NSURL(string: URLString)!
+        let request = NSURLRequest(URL: URL)
         
-        let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithURL(URL) { maybeData, maybeResponse, maybeError in
+        let task = session.dataTaskWithRequest(request) { maybeData, maybeResponse, maybeError in
             do {
                 // Make sure there's data
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
@@ -367,17 +382,17 @@ public struct Plaidster {
         // Create the URL string including the options dictionary
         let URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         let URL = NSURL(string: URLString)!
-        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: URL)
         
-        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
@@ -409,17 +424,17 @@ public struct Plaidster {
     public func fetchCategories(handler: FetchCategoriesHandler) {
         let URLString = "\(baseURL)categories"
         let URL = NSURL(string: URLString)!
-        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: URL)
         
-        let task = session.dataTaskWithURL(URL) { maybeData, maybeResponse, maybeError in
+        let task = session.dataTaskWithRequest(request) { maybeData, maybeResponse, maybeError in
             do {
                 // Make sure there's data
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
@@ -443,17 +458,17 @@ public struct Plaidster {
     public func fetchInstitutions(handler: FetchInstitutionsHandler) {
         let URLString = "\(baseURL)institutions"
         let URL = NSURL(string: URLString)!
-        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: URL)
         
-        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
@@ -475,17 +490,18 @@ public struct Plaidster {
     public func fetchLongTailInstitutions(count: Int, offset: Int, handler: FetchInstitutionsHandler) {
         let URLString = "\(baseURL)institutions/longtail?client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
         let URL = NSURL(string: URLString)!
-        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: URL)
         
-        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
                 guard let data = maybeData where maybeError == nil else {
                     throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
@@ -511,9 +527,9 @@ public struct Plaidster {
         }
        
         let URL = NSURL(string: URLString)!
-        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: URL)
         
-        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
                 guard let data = maybeData where maybeError == nil else {
@@ -523,8 +539,8 @@ public struct Plaidster {
                     return
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
@@ -548,9 +564,9 @@ public struct Plaidster {
     public func searchInstitutions(id id: String, handler: SearchInstitutionsHandler) -> NSURLSessionDataTask {
         let URLString = "\(baseURL)institutions/search?id=\(id)"
         let URL = NSURL(string: URLString)!
-        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: URL)
         
-        let task = session.dataTaskWithURL(URL) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
                 guard let data = maybeData where maybeError == nil else {
@@ -560,8 +576,8 @@ public struct Plaidster {
                     return
                 }
                 
-                // Print raw response if option enabled
-                self.printRawResponse(data)
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
                 guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
