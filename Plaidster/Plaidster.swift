@@ -65,8 +65,12 @@ public struct Plaidster {
     // Set to true to debugPrint all raw JSON responses from Plaid
     public var printRawConnections = false
     
+    // Optionally change the default connection timeout of 60 seconds
+    private static let defaultConnectionTimeout = 60.0
+    public var connectionTimeout: NSTimeInterval = Plaidster.defaultConnectionTimeout
+    
     // MARK: Initialisation
-    public init(clientID: String, secret: String, mode: PlaidEnvironment) {
+    public init(clientID: String, secret: String, mode: PlaidEnvironment, connectionTimeout: NSTimeInterval = Plaidster.defaultConnectionTimeout) {
         self.clientID = clientID
         self.secret = secret
         
@@ -76,6 +80,8 @@ public struct Plaidster {
         case .Production:
             self.baseURL = Plaidster.ProductionBaseURL
         }
+        
+        self.connectionTimeout = connectionTimeout
     }
     
     // MARK: Methods
@@ -116,6 +122,7 @@ public struct Plaidster {
         
         let URL = NSURL(string: URLString)!
         let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         request.HTTPMethod = HTTPMethod.Post
         request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
         
@@ -192,6 +199,7 @@ public struct Plaidster {
         
         let URL = NSURL(string: URLString)!
         let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         request.HTTPMethod = HTTPMethod.Delete
         request.allHTTPHeaderFields = ["Content-Type": "application/x-www-form-urlencoded"]
         request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
@@ -258,6 +266,7 @@ public struct Plaidster {
         
         let URL = NSURL(string: URLString)!
         let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         request.HTTPMethod = HTTPMethod.Post
         request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
         
@@ -327,7 +336,8 @@ public struct Plaidster {
     public func fetchUserBalance(accessToken: String, handler: FetchUserBalanceHandler) {
         let URLString = "\(baseURL)balance?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
         let URL = NSURL(string: URLString)!
-        let request = NSURLRequest(URL: URL)
+        let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         
         let task = session.dataTaskWithRequest(request) { maybeData, maybeResponse, maybeError in
             do {
@@ -382,7 +392,8 @@ public struct Plaidster {
         // Create the URL string including the options dictionary
         let URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         let URL = NSURL(string: URLString)!
-        let request = NSURLRequest(URL: URL)
+        let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
@@ -424,7 +435,8 @@ public struct Plaidster {
     public func fetchCategories(handler: FetchCategoriesHandler) {
         let URLString = "\(baseURL)categories"
         let URL = NSURL(string: URLString)!
-        let request = NSURLRequest(URL: URL)
+        let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         
         let task = session.dataTaskWithRequest(request) { maybeData, maybeResponse, maybeError in
             do {
@@ -458,7 +470,8 @@ public struct Plaidster {
     public func fetchInstitutions(handler: FetchInstitutionsHandler) {
         let URLString = "\(baseURL)institutions"
         let URL = NSURL(string: URLString)!
-        let request = NSURLRequest(URL: URL)
+        let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
@@ -490,9 +503,9 @@ public struct Plaidster {
     public func fetchLongTailInstitutions(count: Int, offset: Int, handler: FetchInstitutionsHandler) {
         let URLString = "\(baseURL)institutions/longtail?client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
         let URL = NSURL(string: URLString)!
-        let request = NSURLRequest(URL: URL)
+        let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         
-        let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
@@ -527,7 +540,8 @@ public struct Plaidster {
         }
        
         let URL = NSURL(string: URLString)!
-        let request = NSURLRequest(URL: URL)
+        let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
@@ -564,7 +578,8 @@ public struct Plaidster {
     public func searchInstitutions(id id: String, handler: SearchInstitutionsHandler) -> NSURLSessionDataTask {
         let URLString = "\(baseURL)institutions/search?id=\(id)"
         let URL = NSURL(string: URLString)!
-        let request = NSURLRequest(URL: URL)
+        let request = NSMutableURLRequest(URL: URL)
+        request.timeoutInterval = connectionTimeout
         
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
