@@ -45,7 +45,13 @@ public struct PlaidTransaction {
         name = transaction["name"] as! String
         pending = transaction["pending"] as! Bool
         category = transaction["category"] as? [String]
-        categoryId = transaction["categoryId"] as? Int
+        if let category_id = transaction["category_id"] as? String {
+            categoryId = Int(category_id)
+        } else if let category_id = transaction["category_id"] as? Int {
+            categoryId = category_id
+        } else {
+            categoryId = nil
+        }
         
         let meta = transaction["meta"] as! [String:AnyObject]
         let location = meta["location"] as? [String:AnyObject]
