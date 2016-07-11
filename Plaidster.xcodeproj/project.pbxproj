@@ -280,7 +280,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0720;
-				ORGANIZATIONNAME = "Willow Bumby";
+				ORGANIZATIONNAME = Plaidster;
 				TargetAttributes = {
 					53ABE1181C601B9B00E0E72B = {
 						CreatedOnToolsVersion = 7.2;

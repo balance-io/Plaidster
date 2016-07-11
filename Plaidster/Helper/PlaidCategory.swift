@@ -3,7 +3,7 @@
 //  Plaidster
 //
 //  Created by Benjamin Baron on 2/9/16.
-//  Copyright © 2016 Willow Bumby. All rights reserved.
+//  Copyright © 2016 Plaidster. All rights reserved.
 //
 
 import Foundation

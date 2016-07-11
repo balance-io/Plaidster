@@ -29,14 +29,10 @@ What I'm working on:
 - More soon...
 
 ## Contributing
-I am trying to put as much time into this as I can, but I'm not superwoman. If you're also in the search for a good up-to-date Plaid binding for iOS, please consider contributing back to the project so we can achieve our goals easier, faster  and better. If you're interested in contributing and would like to know how you can help, please check out the Issues tab or email me at [willow.rose@bumby.ca](mailto:willow.rose@bumby.ca).
+I am trying to put as much time into this as I can, but I'm not superwoman. If you're also in the search for a good up-to-date Plaid binding for iOS, please consider contributing back to the project so we can achieve our goals easier, faster  and better. If you're interested in contributing and would like to know how you can help, please reach out.
 
 #### Find a problem?
 Please file a new issue with a detailed description of the problem and steps to reproduce/sample code. If you're feeling really generous, submit a PR with tests that also fixes the problem. :smiley:
-
-## Maintainers
-Please remind me to add you to this list if you've had a PR merged into master.
-- Willow Bumby ([@istx25](https://www.github.com/istx25))
 
 ## Licensing
 Plaidster has been published under the protection of the MIT License.

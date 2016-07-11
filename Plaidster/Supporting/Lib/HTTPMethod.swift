@@ -1,8 +1,8 @@
 //
 //  HTTPMethod.swift
 //
-//  Created by Willow Bumby on 2016-01-17.
-//  Copyright © 2016 Willow Bumby. All rights reserved.
+//  Created by Willow Bellemore on 2016-01-17.
+//  Copyright © 2016 Plaidster. All rights reserved.
 //
 
 import Foundation
