@@ -2,7 +2,7 @@
 
 ## Features
 
-- Authentication (Connect)
+- Authentication (Connect) including full MFA support
 - Fetching a set of transactions using Connect
 - Fetching a set of accounts using Connect
 - Carthage Support
@@ -24,12 +24,11 @@ What I'm working on:
 - A thorough set of documentation
 - A thorough unit testing suite
 - Full support for all API endpoints
-- Properly handling all posisble client-side errors
-- OS X Support
+- Properly handling all possible client-side errors
 - More soon...
 
 ## Contributing
-I am trying to put as much time into this as I can, but I'm not superwoman. If you're also in the search for a good up-to-date Plaid binding for iOS, please consider contributing back to the project so we can achieve our goals easier, faster  and better. If you're interested in contributing and would like to know how you can help, please reach out.
+Plaidster is under active development, and is currently used primarily by the upcoming OS X app ![Balance](http://balancemy.money). If you're also searching for a good up-to-date Plaid binding for OS X or iOS, please consider contributing back to the project so we can achieve our goals easier, faster, and better. If you're interested in contributing and would like to know how you can help, please reach out. We're happy to merge in all reasonable pull requests. 
 
 #### Find a problem?
 Please file a new issue with a detailed description of the problem and steps to reproduce/sample code. If you're feeling really generous, submit a PR with tests that also fixes the problem. :smiley:
