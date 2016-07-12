@@ -85,13 +85,13 @@ public struct PlaidSearchInstitution {
     }
     
     // MARK: Initialization
-    public init(institution: [String: AnyObject]) throws {
-        type = institution["type"] as! String
+    public init(institution: [String: Any]) throws {
+        type = try checkType(institution, name: "type")
         
-        name = institution["name"] as! String
+        name = try checkType(institution, name: "name")
         nameBreak = institution["nameBreak"] as? Int
         
-        products = institution["products"] as! [String: Bool]
+        products = try checkType(institution, name: "products")
         
         forgottenPasswordUrl = institution["forgottenPassword"] as? String
         accountLockedUrl = institution["accountLocked"] as? String
@@ -100,7 +100,7 @@ public struct PlaidSearchInstitution {
         video = institution["video"] as? String
         
         fields = [Field]()
-        let fieldsDictArray = institution["fields"] as! [[String: String]]
+        let fieldsDictArray: [[String: String]] = try checkType(institution, name: "fields")
         for fieldDict in fieldsDictArray {
             if let name = fieldDict["name"], label = fieldDict["label"], type = fieldDict["type"] {
                 let field = Field(name: name, label: label, type: type)
@@ -108,7 +108,7 @@ public struct PlaidSearchInstitution {
             }
         }
         
-        let colors = institution["colors"] as! [String: AnyObject]
+        let colors: [String: Any] = try checkType(institution, name: "colors")
         lightColor = colorFromString(colors["light"] as? String)
         darkColor = colorFromString(colors["dark"] as? String)
         darkerColor = colorFromString(colors["darker"] as? String)

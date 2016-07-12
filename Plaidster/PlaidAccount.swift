@@ -29,23 +29,23 @@ public struct PlaidAccount {
     public let subType: String?
     
     // MARK: Initialisation
-    public init(account: [String: AnyObject]) {
-        institutionType = account["institution_type"] as! String
-        id = account["_id"] as! String
-        item = account["_item"] as! String
-        user = account["_user"] as! String
+    public init(account: [String: Any]) throws {
+        institutionType = try checkType(account, name: "institution_type")
+        id = try checkType(account, name: "_id")
+        item = try checkType(account, name: "_item")
+        user = try checkType(account, name: "_user")
     
-        let balance = account["balance"] as! [String: AnyObject]
-        current = balance["current"] as! Double
+        let balance: [String: Any] = try checkType(account, name: "balance")
+        current = try checkType(balance, name: "current")
         available = balance["available"] as? Double
         
-        let meta = account["meta"] as! [String: AnyObject]
+        let meta: [String: Any] = try checkType(account, name: "meta")
         officialName = meta["official_name"] as? String
-        type = account["type"] as! String
+        type = try checkType(account, name: "type")
         subType = account["subtype"] as? String
         number = meta["number"] as? String
         owner = meta["owner"] as? String
-        name = meta["name"] as! String
+        name = try checkType(meta, name: "name")
         limit = meta["limit"] as? Double
     }
 }

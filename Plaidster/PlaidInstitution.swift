@@ -26,25 +26,25 @@ public struct PlaidInstitution {
     var url: String?
     
     // MARK: Initialization
-    public init(institution: [String: AnyObject]) throws {
+    public init(institution: [String: Any]) throws {
         if institution["currencyCode"] is String {
-            currencyCode = institution["currencyCode"] as! String
+            currencyCode = try checkType(institution, name: "currencyCode")
         } else {
             // All main institutions are USD so they don't return a currency code
             currencyCode = "USD"
         }
         
-        let credentials = institution["credentials"] as! [String: String]
-        usernameLabel = credentials["username"] as String!
-        passwordLabel = credentials["password"] as String!
+        let credentials: [String: Any] = try checkType(institution, name: "credentials")
+        usernameLabel = try checkType(credentials, name: "username")
+        passwordLabel = try checkType(credentials, name: "password")
         
-        hasMfa = institution["has_mfa"] as! Bool
-        mfa = institution["mfa"] as! [String]
+        hasMfa = try checkType(institution, name: "has_mfa")
+        mfa = try checkType(institution, name: "mfa")
         
-        name = institution["name"] as! String
-        products = institution["products"] as! [String]
+        name = try checkType(institution, name: "name")
+        products = try checkType(institution, name: "products")
         
-        type = institution["type"] as! String
+        type = try checkType(institution, name: "type")
         url = institution["url"] as? String
     }
 }

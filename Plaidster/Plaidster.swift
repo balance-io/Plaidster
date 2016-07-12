@@ -137,7 +137,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -153,7 +153,7 @@ public struct Plaidster {
                 
                 // Check for an MFA response
                 let MFAType = PlaidMFAType(rawValue: JSONResult["type"] as? String ?? "")
-                let MFAResponse = JSONResult["mfa"] as? [[String: AnyObject]]
+                let MFAResponse = JSONResult["mfa"] as? [[String: Any]]
                 if (MFAType == nil || MFAResponse == nil) && !(MFAType == nil && MFAResponse == nil) {
                     // This should never happen. It should always return both pieces of data.
                     throw PlaidsterError.JSONEmpty("Missing MFA information")
@@ -164,20 +164,32 @@ public struct Plaidster {
                     handler(accessToken: token, MFAType: MFAType, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
                 } else {
                     // Parse accounts if they're included
-                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]]
+                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: Any]]
                     var managedAccounts: [PlaidAccount]?
                     if let unmanagedAccounts = unmanagedAccounts {
-                        managedAccounts = unmanagedAccounts.map {
-                            PlaidAccount(account: $0)
+                        managedAccounts = [PlaidAccount]()
+                        for result in unmanagedAccounts {
+                            do {
+                                let account = try PlaidAccount(account: result)
+                                managedAccounts!.append(account)
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
                     
                     // Parse transactions if they're included
-                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]]
+                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: Any]]
                     var managedTransactions: [PlaidTransaction]?
                     if let unmanagedTransactions = unmanagedTransactions {
-                        managedTransactions = unmanagedTransactions.map {
-                            PlaidTransaction(transaction: $0)
+                        managedTransactions = [PlaidTransaction]()
+                        for result in unmanagedTransactions {
+                            do {
+                                let transaction = try PlaidTransaction(transaction: result)
+                                managedTransactions!.append(transaction)
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
                     
@@ -215,7 +227,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -281,7 +293,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -292,9 +304,9 @@ public struct Plaidster {
                 
                 // Check for an MFA response
                 let MFAType = PlaidMFAType(rawValue: JSONResult["type"] as? String ?? "")
-                var MFAResponse = JSONResult["mfa"] as? [[String: AnyObject]]
+                var MFAResponse = JSONResult["mfa"] as? [[String: Any]]
                 if MFAResponse == nil {
-                    if let response = JSONResult["mfa"] as? [String: AnyObject] {
+                    if let response = JSONResult["mfa"] as? [String: Any] {
                         MFAResponse = [response]
                     }
                 }
@@ -304,20 +316,32 @@ public struct Plaidster {
                     handler(MFAType: MFAType, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
                 } else {
                     // Parse accounts if they're included
-                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]]
+                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: Any]]
                     var managedAccounts: [PlaidAccount]?
                     if let unmanagedAccounts = unmanagedAccounts {
-                        managedAccounts = unmanagedAccounts.map {
-                            PlaidAccount(account: $0)
+                        managedAccounts = [PlaidAccount]()
+                        for result in unmanagedAccounts {
+                            do {
+                                let account = try PlaidAccount(account: result)
+                                managedAccounts!.append(account)
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
                     
                     // Parse transactions if they're included
-                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]]
+                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: Any]]
                     var managedTransactions: [PlaidTransaction]?
                     if let unmanagedTransactions = unmanagedTransactions {
-                        managedTransactions = unmanagedTransactions.map {
-                            PlaidTransaction(transaction: $0)
+                        managedTransactions = [PlaidTransaction]()
+                        for result in unmanagedTransactions {
+                            do {
+                                let transaction = try PlaidTransaction(transaction: result)
+                                managedTransactions!.append(transaction)
+                            } catch {
+                                print(error)
+                            }
                         }
                     }
                     
@@ -350,7 +374,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -360,13 +384,19 @@ public struct Plaidster {
                 try throwPlaidsterError(code, message)
                 
                 // Check for accounts
-                guard let unmanagedAccounts = JSONResult["accounts"] as? [[String:AnyObject]] else {
+                guard let unmanagedAccounts = JSONResult["accounts"] as? [[String: Any]] else {
                     throw PlaidsterError.JSONEmpty("No accounts returned")
                 }
                 
                 // Map the accounts and call the handler
-                let managedAccounts = unmanagedAccounts.map {
-                    PlaidAccount(account: $0)
+                var managedAccounts = [PlaidAccount]()
+                for result in unmanagedAccounts {
+                    do {
+                        let account = try PlaidAccount(account: result)
+                        managedAccounts.append(account)
+                    } catch {
+                        print(error)
+                    }
                 }
                 handler(accounts: managedAccounts, error: maybeError)
             } catch {
@@ -406,7 +436,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: AnyObject] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: Any] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -416,12 +446,20 @@ public struct Plaidster {
                 try throwPlaidsterError(code, message)
                 
                 // Check for transactions
-                guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]] else {
+                guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: Any]] else {
                     throw PlaidsterError.JSONEmpty("No transactions returned")
                 }
                 
                 // Map the transactions and call the handler
-                let managedTransactions = unmanagedTransactions.map { PlaidTransaction(transaction: $0) }
+                var managedTransactions = [PlaidTransaction]()
+                for result in unmanagedTransactions {
+                    do {
+                        let transaction = try PlaidTransaction(transaction: result)
+                        managedTransactions.append(transaction)
+                    } catch {
+                        print(error)
+                    }
+                }
                 handler(transactions: managedTransactions, error: maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
@@ -449,14 +487,21 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
                 // Map the categories and call the handler
-                let managedCategories = JSONResult.map {
-                    PlaidCategory(category: $0)
+                var managedCategories = [PlaidCategory]()
+                for result in JSONResult {
+                    do {
+                        let category = try PlaidCategory(category: result)
+                        managedCategories.append(category)
+                    } catch {
+                        print(error)
+                    }
                 }
+                
                 handler(categories: managedCategories, error: maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
@@ -484,12 +529,20 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
                 // Map the institutions and call the handler
-                let managedInstitutions = try JSONResult.map { try PlaidInstitution(institution: $0) }
+                var managedInstitutions = [PlaidInstitution]()
+                for result in JSONResult {
+                    do {
+                        let institution = try PlaidInstitution(institution: result)
+                        managedInstitutions.append(institution)
+                    } catch {
+                        print(error)
+                    }
+                }
                 handler(institutions: managedInstitutions, error: maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
@@ -517,12 +570,20 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
                 // Map the instututions and call the handler
-                let managedInstitutions = try JSONResult.map { try PlaidInstitution(institution: $0) }
+                var managedInstitutions = [PlaidInstitution]()
+                for result in JSONResult {
+                    do {
+                        let institution = try PlaidInstitution(institution: result)
+                        managedInstitutions.append(institution)
+                    } catch {
+                        print(error)
+                    }
+                }
                 handler(institutions: managedInstitutions, error: maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
@@ -557,12 +618,20 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
                 // Map the instututions and call the handler
-                let managedInstitutions = try JSONResult.map { try PlaidSearchInstitution(institution: $0) }
+                var managedInstitutions = [PlaidSearchInstitution]()
+                for result in JSONResult {
+                    do {
+                        let institution = try PlaidSearchInstitution(institution: result)
+                        managedInstitutions.append(institution)
+                    } catch {
+                        print(error)
+                    }
+                }
                 handler(institutions: managedInstitutions, error: maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
@@ -595,11 +664,11 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
-                // Map the instututions and call the handler
+                // Map the institution and call the handler
                 let managedInstitution = try PlaidSearchInstitution(institution: JSONResult)
                 handler(institutions: [managedInstitution], error: maybeError)
             } catch {

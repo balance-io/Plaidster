@@ -37,13 +37,13 @@ public struct PlaidTransaction {
     public let categoryId: Int?
     
     // MARK: Initialisation
-    public init(transaction: [String:AnyObject]) {
-        account = transaction["_account"] as! String
-        id = transaction["_id"] as! String
-        amount = transaction["amount"] as! Double
-        date = transaction["date"] as! String
-        name = transaction["name"] as! String
-        pending = transaction["pending"] as! Bool
+    public init(transaction: [String: Any]) throws {
+        account = try checkType(transaction, name: "_account")
+        id = try checkType(transaction, name: "_id")
+        amount = try checkType(transaction, name: "amount")
+        date = try checkType(transaction, name: "date")
+        name = try checkType(transaction, name: "name")
+        pending = try checkType(transaction, name: "pending")
         category = transaction["category"] as? [String]
         if let category_id = transaction["category_id"] as? String {
             categoryId = Int(category_id)
@@ -53,26 +53,26 @@ public struct PlaidTransaction {
             categoryId = nil
         }
         
-        let meta = transaction["meta"] as! [String:AnyObject]
-        let location = meta["location"] as? [String:AnyObject]
+        let meta = transaction["meta"] as? [String: Any]
+        let location = meta?["location"] as? [String: Any]
         address = location?["address"] as? String
         city = location?["city"] as? String
         state = location?["state"] as? String
         zip = location?["zip"] as? String
         storeNumber = location?["store_number"] as? String
-        contact = meta["contact"] as? String
+        contact = meta?["contact"] as? String
         
-        let coordinates = location?["coordinates"] as? [String:AnyObject]
+        let coordinates = location?["coordinates"] as? [String: Any]
         latitude = coordinates?["lat"] as? Double
         longitude = coordinates?["lon"] as? Double
         
-        let type = transaction["type"] as? [String:AnyObject]
+        let type = transaction["type"] as? [String: Any]
         trxnType = type?["primary"] as? String
 
-        let score = transaction["score"] as? [String:AnyObject]
+        let score = transaction["score"] as? [String: Any]
         nameScore = score?["name"] as? Double
         
-        let locationScore = score?["location"] as? [String:AnyObject]
+        let locationScore = score?["location"] as? [String: Any]
         locationScoreAddress = locationScore?["address"] as? Double
         locationScoreCity = locationScore?["city"] as? Double
         locationScoreState = locationScore?["state"] as? Double
