@@ -26,7 +26,7 @@ public struct PlaidInstitution {
     var url: String?
     
     // MARK: Initialization
-    public init(institution: [String: Any]) throws {
+    public init(institution: [String: AnyObject]) throws {
         if institution["currencyCode"] is String {
             currencyCode = try checkType(institution, name: "currencyCode")
         } else {
@@ -34,7 +34,7 @@ public struct PlaidInstitution {
             currencyCode = "USD"
         }
         
-        let credentials: [String: Any] = try checkType(institution, name: "credentials")
+        let credentials: [String: AnyObject] = try checkType(institution, name: "credentials")
         usernameLabel = try checkType(credentials, name: "username")
         passwordLabel = try checkType(credentials, name: "password")
         

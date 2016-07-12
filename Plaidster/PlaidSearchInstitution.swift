@@ -85,7 +85,7 @@ public struct PlaidSearchInstitution {
     }
     
     // MARK: Initialization
-    public init(institution: [String: Any]) throws {
+    public init(institution: [String: AnyObject]) throws {
         type = try checkType(institution, name: "type")
         
         name = try checkType(institution, name: "name")
@@ -108,7 +108,7 @@ public struct PlaidSearchInstitution {
             }
         }
         
-        let colors: [String: Any] = try checkType(institution, name: "colors")
+        let colors: [String: AnyObject] = try checkType(institution, name: "colors")
         lightColor = colorFromString(colors["light"] as? String)
         darkColor = colorFromString(colors["dark"] as? String)
         darkerColor = colorFromString(colors["darker"] as? String)

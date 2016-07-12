@@ -16,7 +16,7 @@ public struct PlaidCategory {
     public let type: String
     
     // MARK: Initialization
-    public init(category: [String: Any]) throws {
+    public init(category: [String: AnyObject]) throws {
         id = try checkType(category, name: "id")
         hierarchy = try checkType(category, name: "hierarchy")
         type = try checkType(category, name: "type")

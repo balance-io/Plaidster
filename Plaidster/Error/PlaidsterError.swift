@@ -22,7 +22,7 @@ func checkType<T, U>(value: T?, name: String) throws -> U {
     return result
 }
 
-func checkType<U>(dictionary: Dictionary<String, Any>, name: String) throws -> U {
+func checkType<U>(dictionary: Dictionary<String, AnyObject>, name: String) throws -> U {
     let value = dictionary[name]
     return try checkType(value, name: name)
 }

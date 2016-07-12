@@ -137,7 +137,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -153,7 +153,7 @@ public struct Plaidster {
                 
                 // Check for an MFA response
                 let MFAType = PlaidMFAType(rawValue: JSONResult["type"] as? String ?? "")
-                let MFAResponse = JSONResult["mfa"] as? [[String: Any]]
+                let MFAResponse = JSONResult["mfa"] as? [[String: AnyObject]]
                 if (MFAType == nil || MFAResponse == nil) && !(MFAType == nil && MFAResponse == nil) {
                     // This should never happen. It should always return both pieces of data.
                     throw PlaidsterError.JSONEmpty("Missing MFA information")
@@ -164,7 +164,7 @@ public struct Plaidster {
                     handler(accessToken: token, MFAType: MFAType, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
                 } else {
                     // Parse accounts if they're included
-                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: Any]]
+                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]]
                     var managedAccounts: [PlaidAccount]?
                     if let unmanagedAccounts = unmanagedAccounts {
                         managedAccounts = [PlaidAccount]()
@@ -179,7 +179,7 @@ public struct Plaidster {
                     }
                     
                     // Parse transactions if they're included
-                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: Any]]
+                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]]
                     var managedTransactions: [PlaidTransaction]?
                     if let unmanagedTransactions = unmanagedTransactions {
                         managedTransactions = [PlaidTransaction]()
@@ -227,7 +227,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -293,7 +293,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -304,9 +304,9 @@ public struct Plaidster {
                 
                 // Check for an MFA response
                 let MFAType = PlaidMFAType(rawValue: JSONResult["type"] as? String ?? "")
-                var MFAResponse = JSONResult["mfa"] as? [[String: Any]]
+                var MFAResponse = JSONResult["mfa"] as? [[String: AnyObject]]
                 if MFAResponse == nil {
-                    if let response = JSONResult["mfa"] as? [String: Any] {
+                    if let response = JSONResult["mfa"] as? [String: AnyObject] {
                         MFAResponse = [response]
                     }
                 }
@@ -316,7 +316,7 @@ public struct Plaidster {
                     handler(MFAType: MFAType, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
                 } else {
                     // Parse accounts if they're included
-                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: Any]]
+                    let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]]
                     var managedAccounts: [PlaidAccount]?
                     if let unmanagedAccounts = unmanagedAccounts {
                         managedAccounts = [PlaidAccount]()
@@ -331,7 +331,7 @@ public struct Plaidster {
                     }
                     
                     // Parse transactions if they're included
-                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: Any]]
+                    let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]]
                     var managedTransactions: [PlaidTransaction]?
                     if let unmanagedTransactions = unmanagedTransactions {
                         managedTransactions = [PlaidTransaction]()
@@ -374,7 +374,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -384,7 +384,7 @@ public struct Plaidster {
                 try throwPlaidsterError(code, message)
                 
                 // Check for accounts
-                guard let unmanagedAccounts = JSONResult["accounts"] as? [[String: Any]] else {
+                guard let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONEmpty("No accounts returned")
                 }
                 
@@ -436,7 +436,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [NSObject: Any] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -446,7 +446,7 @@ public struct Plaidster {
                 try throwPlaidsterError(code, message)
                 
                 // Check for transactions
-                guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: Any]] else {
+                guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONEmpty("No transactions returned")
                 }
                 
@@ -487,7 +487,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -529,7 +529,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -570,7 +570,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -618,7 +618,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: Any]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
@@ -664,7 +664,7 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: Any] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 

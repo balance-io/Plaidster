@@ -37,7 +37,7 @@ public struct PlaidTransaction {
     public let categoryId: Int?
     
     // MARK: Initialisation
-    public init(transaction: [String: Any]) throws {
+    public init(transaction: [String: AnyObject]) throws {
         account = try checkType(transaction, name: "_account")
         id = try checkType(transaction, name: "_id")
         amount = try checkType(transaction, name: "amount")
@@ -53,8 +53,8 @@ public struct PlaidTransaction {
             categoryId = nil
         }
         
-        let meta = transaction["meta"] as? [String: Any]
-        let location = meta?["location"] as? [String: Any]
+        let meta = transaction["meta"] as? [String: AnyObject]
+        let location = meta?["location"] as? [String: AnyObject]
         address = location?["address"] as? String
         city = location?["city"] as? String
         state = location?["state"] as? String
@@ -62,17 +62,17 @@ public struct PlaidTransaction {
         storeNumber = location?["store_number"] as? String
         contact = meta?["contact"] as? String
         
-        let coordinates = location?["coordinates"] as? [String: Any]
+        let coordinates = location?["coordinates"] as? [String: AnyObject]
         latitude = coordinates?["lat"] as? Double
         longitude = coordinates?["lon"] as? Double
         
-        let type = transaction["type"] as? [String: Any]
+        let type = transaction["type"] as? [String: AnyObject]
         trxnType = type?["primary"] as? String
 
-        let score = transaction["score"] as? [String: Any]
+        let score = transaction["score"] as? [String: AnyObject]
         nameScore = score?["name"] as? Double
         
-        let locationScore = score?["location"] as? [String: Any]
+        let locationScore = score?["location"] as? [String: AnyObject]
         locationScoreAddress = locationScore?["address"] as? Double
         locationScoreCity = locationScore?["city"] as? Double
         locationScoreState = locationScore?["state"] as? Double
