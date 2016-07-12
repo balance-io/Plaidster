@@ -8,23 +8,26 @@
 
 import Foundation
 
-func checkType<T, U>(value: T?, name: String) throws -> U {
+func checkType<T, U>(value: T?, name: String, file: String = #file, line: Int = #line, function: String = #function) throws -> U {
+    let fileName = NSURL(fileURLWithPath: file).URLByDeletingPathExtension?.lastPathComponent ?? file
+    let functionName = function.componentsSeparatedByString("(").first ?? function
+    
     guard let value = value else {
-        let message = "[\(name)] Expected \(U.self), but value was nil"
+        let message = "[\(fileName):\(line) \(functionName) \"\(name)\"] Expected \(U.self), but value was nil"
         throw PlaidsterError.InvalidType(message)
     }
     
     guard let result = value as? U else {
-        let message = "[\(name)] Expected \(U.self), but it was an \(value.dynamicType) with value: \(value)"
+        let message = "[\(fileName):\(line) \(functionName) \"\(name)\"] Expected \(U.self), but it was an \(value.dynamicType) with value: \(value)"
         throw PlaidsterError.InvalidType(message)
     }
     
     return result
 }
 
-func checkType<U>(dictionary: Dictionary<String, AnyObject>, name: String) throws -> U {
-    let value = dictionary[name]
-    return try checkType(value, name: name)
+func checkType<U>(dict: Dictionary<String, AnyObject>, file: String = #file, name: String, line: Int = #line, function: String = #function) throws -> U {
+    let value = dict[name]
+    return try checkType(value, name: name, file: file, line: line, function: function)
 }
 
 public enum PlaidsterError: ErrorType, PlaidErrorConvertible {
@@ -55,13 +58,17 @@ public enum PlaidsterError: ErrorType, PlaidErrorConvertible {
         case .JSONDecodingFailed:
             return "JSON decoding failed"
         case .JSONEmpty(let message):
-            if message == nil {
-                return "JSON response empty"
-            } else {
+            if let message = message {
                 return "JSON response empty: \(message)"
+            } else {
+                return "JSON response empty"
             }
         case .InvalidType(let exception):
-            return "Invalid type: \(exception)"
+            if let exception = exception {
+                return "Invalid type: \(exception)"
+            } else {
+                return "Invalid type"
+            }
         case .UnknownException(let exception):
             return "Unknown exception: \(exception)"
         }
@@ -69,5 +76,15 @@ public enum PlaidsterError: ErrorType, PlaidErrorConvertible {
     
     public func errorUserInfo() -> Dictionary<String,String>? {
         return [NSLocalizedDescriptionKey: errorDescription()]
+    }
+}
+
+extension PlaidsterError: CustomStringConvertible, CustomDebugStringConvertible {
+    public var description: String {
+        return errorDescription()
+    }
+    
+    public var debugDescription: String {
+        return errorDescription()
     }
 }
