@@ -8,6 +8,8 @@
 
 import Foundation
 
+public typealias LoggingFunction = (item: Any) -> (Void)
+
 public enum PlaidProduct: String {
     case Connect = "connect"
     case Auth    = "auth"
@@ -52,24 +54,39 @@ private func throwPlaidsterError(code: Int?, _ message: String?) throws {
 
 public struct Plaidster {
     
-    // MARK: Constants
+    //
+    // MARK: - Constants -
+    //
+    
     private static let DevelopmentBaseURL = "https://tartan.plaid.com/"
     private static let ProductionBaseURL = "https://api.plaid.com/"
     
-    // MARK: Properties
+    //
+    // MARK: - Properties -
+    //
+    
     private let session = NSURLSession.sharedSession()
     private let clientID: String
     private let secret: String
     private let baseURL: String
     
+    //
+    // MARK: - Logging -
+    //
+    
     // Set to true to debugPrint all raw JSON responses from Plaid
     public var printRawConnections = false
+    public var logger: LoggingFunction?
+    public var rawConnectionsLogger: LoggingFunction?
     
     // Optionally change the default connection timeout of 60 seconds
     private static let defaultConnectionTimeout = 60.0
     public var connectionTimeout: NSTimeInterval = Plaidster.defaultConnectionTimeout
     
-    // MARK: Initialisation
+    //
+    // MARK: - Initialisation -
+    //
+    
     public init(clientID: String, secret: String, mode: PlaidEnvironment, connectionTimeout: NSTimeInterval = Plaidster.defaultConnectionTimeout) {
         self.clientID = clientID
         self.secret = secret
@@ -84,7 +101,42 @@ public struct Plaidster {
         self.connectionTimeout = connectionTimeout
     }
     
-    // MARK: Methods
+    //
+    // MARK: - Private Methods -
+    //
+    
+    private func log(item: Any) {
+        if let logger = logger {
+            logger(item: item)
+        } else {
+            print(item)
+        }
+    }
+    
+    func dictionaryToString(value: AnyObject) -> String {
+        guard NSJSONSerialization.isValidJSONObject(value) else { return "" }
+        do {
+            let data = try NSJSONSerialization.dataWithJSONObject(value, options: NSJSONWritingOptions(rawValue: 0))
+            if let string = String(data: data, encoding: NSUTF8StringEncoding) {
+                return string
+            }
+        } catch {
+            log("Error serializing dictionary: \(error)")
+        }
+        
+        return ""
+    }
+    
+    static private let JSONDateFormatter = NSDateFormatter()
+    static private var JSONDateFormatterToken: dispatch_once_t = 0
+    func dateToJSONString(date: NSDate) -> String {
+        dispatch_once(&Plaidster.JSONDateFormatterToken) {
+            Plaidster.JSONDateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
+        }
+        
+        return Plaidster.JSONDateFormatter.stringFromDate(date)
+    }
+    
     static private var printRequestDateFormatterToken: dispatch_once_t = 0
     static private let printRequestDateFormatter = NSDateFormatter()
     private func printRequest(request: NSURLRequest, responseData: NSData, function: String = #function) {
@@ -103,13 +155,22 @@ public struct Plaidster {
             let response = NSString(data: responseData, encoding: NSUTF8StringEncoding) ?? "Failed to convert response data to string"
             
             let date = Plaidster.printRequestDateFormatter.stringFromDate(NSDate())
-            let logMessage = "\(function):\n" +
+            let logMessage = "\(date) \(function):\n" +
                              "URL: \(url)\n" +
                              "Body: \(body)\n" +
                              "Response: \(response)"
-            print("\(date) \(logMessage)")
+            
+            if let rawConnectionsLogger = rawConnectionsLogger {
+                rawConnectionsLogger(item: logMessage)
+            } else {
+                log(logMessage)
+            }
         }
     }
+    
+    //
+    // MARK: - Public Methods -
+    //
     
     public func addUser(username username: String, password: String, pin: String?, type: String, handler: AddUserHandler) {
         let URLString = "\(baseURL)connect"
@@ -173,7 +234,7 @@ public struct Plaidster {
                                 let account = try PlaidAccount(account: result)
                                 managedAccounts!.append(account)
                             } catch {
-                                print(error)
+                                self.log(error)
                             }
                         }
                     }
@@ -188,7 +249,7 @@ public struct Plaidster {
                                 let transaction = try PlaidTransaction(transaction: result)
                                 managedTransactions!.append(transaction)
                             } catch {
-                                print(error)
+                                self.log(error)
                             }
                         }
                     }
@@ -325,7 +386,7 @@ public struct Plaidster {
                                 let account = try PlaidAccount(account: result)
                                 managedAccounts!.append(account)
                             } catch {
-                                print(error)
+                                self.log(error)
                             }
                         }
                     }
@@ -340,7 +401,7 @@ public struct Plaidster {
                                 let transaction = try PlaidTransaction(transaction: result)
                                 managedTransactions!.append(transaction)
                             } catch {
-                                print(error)
+                                self.log(error)
                             }
                         }
                     }
@@ -395,7 +456,7 @@ public struct Plaidster {
                         let account = try PlaidAccount(account: result)
                         managedAccounts.append(account)
                     } catch {
-                        print(error)
+                        self.log(error)
                     }
                 }
                 handler(accounts: managedAccounts, error: maybeError)
@@ -457,7 +518,7 @@ public struct Plaidster {
                         let transaction = try PlaidTransaction(transaction: result)
                         managedTransactions.append(transaction)
                     } catch {
-                        print(error)
+                        self.log(error)
                     }
                 }
                 handler(transactions: managedTransactions, error: maybeError)
@@ -498,7 +559,7 @@ public struct Plaidster {
                         let category = try PlaidCategory(category: result)
                         managedCategories.append(category)
                     } catch {
-                        print(error)
+                        self.log(error)
                     }
                 }
                 
@@ -540,7 +601,7 @@ public struct Plaidster {
                         let institution = try PlaidInstitution(institution: result)
                         managedInstitutions.append(institution)
                     } catch {
-                        print(error)
+                        self.log(error)
                     }
                 }
                 handler(institutions: managedInstitutions, error: maybeError)
@@ -581,7 +642,7 @@ public struct Plaidster {
                         let institution = try PlaidInstitution(institution: result)
                         managedInstitutions.append(institution)
                     } catch {
-                        print(error)
+                        self.log(error)
                     }
                 }
                 handler(institutions: managedInstitutions, error: maybeError)
@@ -629,7 +690,7 @@ public struct Plaidster {
                         let institution = try PlaidSearchInstitution(institution: result)
                         managedInstitutions.append(institution)
                     } catch {
-                        print(error)
+                        self.log(error)
                     }
                 }
                 handler(institutions: managedInstitutions, error: maybeError)
