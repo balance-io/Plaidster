@@ -89,6 +89,7 @@ public struct PlaidErrorCode {
     public static let AdditionLimitExceeded = 1112
     public static let RateLimitExceeded = 1113
     public static let UnauthorizedEnvironment = 1114
+    public static let ProductAlreadyEnabled = 1115
     public static let InvalidCredentials = 1200
     public static let InvalidUsername = 1201
     public static let InvalidPassword = 1202
@@ -109,12 +110,13 @@ public struct PlaidErrorCode {
     public static let UnableToFindInstitution = 1301
     public static let InstitutionNotResponding = 1302
     public static let InstitutionDown = 1303
+    public static let InstitutionNoLongerSupported = 1307
     public static let UnableToFindCategory = 1501
     public static let TypeRequired = 1502
     public static let InvalidType1503 = 1503
     public static let InvalidDate = 1507
-    public static let ProductNotFound = 1601
-    public static let UserNotFound = 1605
+    public static let ProductNotFound = 1600
+    public static let ProductNotAvailable = 1601
     public static let AccountNotFound = 1606
     public static let ItemNotFound = 1610
     public static let ExtractorError = 1700
