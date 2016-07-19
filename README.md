@@ -28,7 +28,7 @@ What I'm working on:
 - More soon...
 
 ## Contributing
-Plaidster is under active development, and is currently used primarily by the upcoming OS X app ![Balance](http://balancemy.money). If you're also searching for a good up-to-date Plaid binding for OS X or iOS, please consider contributing back to the project so we can achieve our goals easier, faster, and better. If you're interested in contributing and would like to know how you can help, please reach out. We're happy to merge in all reasonable pull requests. 
+Plaidster is under active development, and is currently used primarily by the upcoming OS X app [Balance](http://balancemy.money). If you're also searching for a good up-to-date Plaid binding for OS X or iOS, please consider contributing back to the project so we can achieve our goals easier, faster, and better. If you're interested in contributing and would like to know how you can help, please reach out. We're happy to merge in all reasonable pull requests. 
 
 #### Find a problem?
 Please file a new issue with a detailed description of the problem and steps to reproduce/sample code. If you're feeling really generous, submit a PR with tests that also fixes the problem. :smiley:
