@@ -12,18 +12,18 @@ import Foundation
 public struct PlaidInstitution {
     
     // MARK: Properties
-    var currencyCode: String
-    var usernameLabel: String
-    var passwordLabel: String
+    public var currencyCode: String
+    public var usernameLabel: String
+    public var passwordLabel: String
     
-    var hasMfa: Bool
-    var mfa: [String]
+    public var hasMfa: Bool
+    public var mfa: [String]
     
-    var name: String
-    var products: [String]
+    public var name: String
+    public var products: [String]
     
-    var type: String
-    var url: String?
+    public var type: String
+    public var url: String?
     
     // MARK: Initialization
     public init(institution: [String: AnyObject]) throws {
