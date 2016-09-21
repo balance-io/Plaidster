@@ -614,11 +614,14 @@ public struct Plaidster {
         task.resume()
     }
     
-    public func fetchLongTailInstitutions(count: Int, offset: Int, handler: FetchInstitutionsHandler) {
-        let URLString = "\(baseURL)institutions/longtail?client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
+    public func fetchLongtailInstitutions(count: Int, offset: Int, handler: FetchLongtailInstitutionsHandler) {
+        let URLString = "\(baseURL)institutions/longtail"
+        let parameters = "client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
         let URL = NSURL(string: URLString)!
         let request = NSMutableURLRequest(URL: URL)
         request.timeoutInterval = connectionTimeout
+        request.HTTPMethod = HTTPMethod.Post
+        request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
         
         let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
             do {
@@ -631,13 +634,13 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
+                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject], let totalCount = JSONResult["total_count"] as? Int, let results = JSONResult["results"] as? [[String: AnyObject]] else {
                     throw PlaidsterError.JSONDecodingFailed
                 }
                 
                 // Map the instututions and call the handler
                 var managedInstitutions = [PlaidInstitution]()
-                for result in JSONResult {
+                for result in results {
                     do {
                         let institution = try PlaidInstitution(institution: result)
                         managedInstitutions.append(institution)
@@ -645,10 +648,10 @@ public struct Plaidster {
                         self.log(error)
                     }
                 }
-                handler(institutions: managedInstitutions, error: maybeError)
+                handler(institutions: managedInstitutions, totalCount: totalCount, error: maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(institutions: [PlaidInstitution](), error: cocoaErrorFromException(error))
+                handler(institutions: [PlaidInstitution](), totalCount: -1, error: cocoaErrorFromException(error))
             }
         }
         
