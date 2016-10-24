@@ -36,7 +36,7 @@ public struct PlaidAccount {
         user = try checkType(account, name: "_user")
     
         let balance: [String: AnyObject] = try checkType(account, name: "balance")
-        current = try checkType(balance, name: "current")
+        current = balance["current"] as? Double ?? 0.0
         available = balance["available"] as? Double
         
         let meta: [String: AnyObject] = try checkType(account, name: "meta")
