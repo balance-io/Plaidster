@@ -8,13 +8,13 @@
 
 import Foundation
 
-public typealias AddUserHandler = (accessToken: String?, MFAType: PlaidMFAType?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
-public typealias RemoveUserHandler = (message: String?, error: NSError?) -> (Void)
+public typealias AddUserHandler = (_ accessToken: String?, _ MFAType: PlaidMFAType?, _ MFA: [[String: AnyObject]]?, _ accounts: [PlaidAccount]?, _ transactions: [PlaidTransaction]?, _ error: Error?) -> (Void)
+public typealias RemoveUserHandler = (_ message: String?, _ error: Error?) -> (Void)
 
-public typealias SubmitMFAHandler = (MFAType: PlaidMFAType?, MFA: [[String: AnyObject]]?, accounts: [PlaidAccount]?, transactions: [PlaidTransaction]?, error: NSError?) -> (Void)
-public typealias FetchUserBalanceHandler = (accounts: [PlaidAccount], error: NSError?) -> (Void)
-public typealias FetchUserTransactionsHandler = (transactions: [PlaidTransaction], error: NSError?) -> (Void)
-public typealias FetchCategoriesHandler = (categories: [PlaidCategory], error: NSError?) -> (Void)
-public typealias FetchInstitutionsHandler = (institutions: [PlaidInstitution], error: NSError?) -> (Void)
-public typealias FetchLongtailInstitutionsHandler = (institutions: [PlaidInstitution], totalCount: Int, error: NSError?) -> (Void)
-public typealias SearchInstitutionsHandler = (institutions: [PlaidSearchInstitution], error: NSError?) -> (Void)
+public typealias SubmitMFAHandler = (_ MFAType: PlaidMFAType?, _ MFA: [[String: AnyObject]]?, _ accounts: [PlaidAccount]?, _ transactions: [PlaidTransaction]?, _ error: Error?) -> (Void)
+public typealias FetchUserBalanceHandler = (_ accounts: [PlaidAccount], _ error: Error?) -> (Void)
+public typealias FetchUserTransactionsHandler = (_ transactions: [PlaidTransaction], _ error: Error?) -> (Void)
+public typealias FetchCategoriesHandler = (_ categories: [PlaidCategory], _ error: Error?) -> (Void)
+public typealias FetchInstitutionsHandler = (_ institutions: [PlaidInstitution], _ error: Error?) -> (Void)
+public typealias FetchLongtailInstitutionsHandler = (_ institutions: [PlaidInstitution], _ totalCount: Int, _ error: Error?) -> (Void)
+public typealias SearchInstitutionsHandler = (_ institutions: [PlaidSearchInstitution], _ error: Error?) -> (Void)

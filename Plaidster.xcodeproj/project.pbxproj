@@ -280,6 +280,7 @@
 				TargetAttributes = {
 					53ABE1181C601B9B00E0E72B = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0810;
 					};
 					72FAC65E1C472A1A0068EE78 = {
 						CreatedOnToolsVersion = 7.2;
@@ -412,7 +413,7 @@
 				PRODUCT_NAME = Plaidster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -434,7 +435,7 @@
 				PRODUCT_NAME = Plaidster;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -548,7 +549,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0.1;
 			};
 			name = Debug;
 		};
@@ -567,7 +568,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.istx25.Plaidster;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0.1;
 			};
 			name = Release;
 		};

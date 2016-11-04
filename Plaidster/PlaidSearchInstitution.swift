@@ -69,16 +69,16 @@ public struct PlaidSearchInstitution {
     
     // Convenience property to get the NSData representation of the Base64 encoded image (for example
     // to store more compactly in an sqlite database BLOB field rather than TEXT field.
-    public var logoData: NSData? {
+    public var logoData: Data? {
         if let logo = self.logo {
-            return NSData(base64EncodedString: logo, options: NSDataBase64DecodingOptions(rawValue: 0))
+            return Data(base64Encoded: logo, options: NSData.Base64DecodingOptions(rawValue: 0))
         }
         return nil
     }
     
     // Convenience property to get a platform independent image object from the image data
     public var logoImage: Image? {
-        if let logoData = self.logoData, image = Image(data: logoData) {
+        if let logoData = self.logoData, let image = Image(data: logoData) {
             return image
         }
         return nil
@@ -102,7 +102,7 @@ public struct PlaidSearchInstitution {
         fields = [Field]()
         let fieldsDictArray: [[String: String]] = try checkType(institution, name: "fields")
         for fieldDict in fieldsDictArray {
-            if let name = fieldDict["name"], label = fieldDict["label"], type = fieldDict["type"] {
+            if let name = fieldDict["name"], let label = fieldDict["label"], let type = fieldDict["type"] {
                 let field = Field(name: name, label: label, type: type)
                 fields.append(field)
             }
@@ -131,7 +131,7 @@ public struct PlaidSearchInstitution {
     
     // Plaid returns colors in a frustratingly inconsistant way. Main institutions (i.e. like 10 of them) return
     // colors in this format: rgba(255,255,255,1) while all other institutions return a hex format like #ffffff
-    private func colorFromString(colorString: String?) -> Color? {
+    fileprivate func colorFromString(_ colorString: String?) -> Color? {
         guard let colorString = colorString else {
             return nil
         }
@@ -153,11 +153,11 @@ public struct PlaidSearchInstitution {
     }
     
     // Adapted from http://stackoverflow.com/a/27203691/299262
-    private func hexStringToColor(hex: String) -> Color? {
-        var cString: String = hex.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet() as NSCharacterSet).uppercaseString
+    fileprivate func hexStringToColor(_ hex: String) -> Color? {
+        var cString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).uppercased()
         
         if cString.hasPrefix("#") {
-            cString = cString.substringFromIndex(cString.startIndex.advancedBy(1))
+            cString = cString.substring(from: cString.characters.index(cString.startIndex, offsetBy: 1))
         }
         
         if cString.characters.count != 6 {
@@ -165,7 +165,7 @@ public struct PlaidSearchInstitution {
         }
         
         var rgbValue: UInt32 = 0
-        NSScanner(string: cString).scanHexInt(&rgbValue)
+        Scanner(string: cString).scanHexInt32(&rgbValue)
         
         return Color(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
@@ -175,18 +175,18 @@ public struct PlaidSearchInstitution {
         )
     }
     
-    private func rgbaStringToColor(rgba: String) -> Color? {
-        var cString: String = rgba.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet() as NSCharacterSet)
+    fileprivate func rgbaStringToColor(_ rgba: String) -> Color? {
+        var cString: String = rgba.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines as CharacterSet)
         
         if cString.hasPrefix("rgba(") {
-            cString = cString.substringFromIndex(cString.startIndex.advancedBy(5))
+            cString = cString.substring(from: cString.characters.index(cString.startIndex, offsetBy: 5))
         }
         
         if cString.hasSuffix(")") {
-            cString = cString.substringToIndex(cString.endIndex.advancedBy(-1))
+            cString = cString.substring(to: cString.characters.index(cString.endIndex, offsetBy: -1))
         }
         
-        let colorValues = cString.componentsSeparatedByString(",")
+        let colorValues = cString.components(separatedBy: ",")
         if colorValues.count == 4 {
             let red = (colorValues[0] as NSString).floatValue
             let green = (colorValues[1] as NSString).floatValue

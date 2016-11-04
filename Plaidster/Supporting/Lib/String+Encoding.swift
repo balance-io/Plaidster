@@ -13,21 +13,18 @@ public extension String {
     // a problem because it won't handle, for example, a password containing an & character. So we need to remove
     // those characters from the character set. Then the stringByAddingPercentEncodingWithAllowedCharacters method
     // will work as expected.
-    static private var queryCharSet: NSCharacterSet = NSCharacterSet.URLQueryAllowedCharacterSet()
-    static private var queryCharSetToken: dispatch_once_t = 0
-    static public var URLQueryEncodedValueAllowedCharacters: NSCharacterSet {
-        dispatch_once(&queryCharSetToken) {
-            let mutableCharSet = queryCharSet.mutableCopy() as! NSMutableCharacterSet
-            mutableCharSet.removeCharactersInString("?&=@+/'")
-            queryCharSet = mutableCharSet
-        }
-        
+    static fileprivate var queryCharSet: CharacterSet = CharacterSet.urlQueryAllowed
+    static fileprivate var queryCharSetToken: Int = 0
+    static public var URLQueryEncodedValueAllowedCharacters: CharacterSet = {
+        let mutableCharSet = (queryCharSet as NSCharacterSet).mutableCopy() as! NSMutableCharacterSet
+        mutableCharSet.removeCharacters(in: "?&=@+/'")
+        queryCharSet = mutableCharSet as CharacterSet
         return queryCharSet
-    }
+    }()
     
     // Used to encode individual query parameters
     var URLQueryParameterEncodedValue: String {
-        if let encodedValue = self.stringByAddingPercentEncodingWithAllowedCharacters(String.URLQueryEncodedValueAllowedCharacters) {
+        if let encodedValue = self.addingPercentEncoding(withAllowedCharacters: String.URLQueryEncodedValueAllowedCharacters) {
             return encodedValue
         } else {
             return self
@@ -36,7 +33,7 @@ public extension String {
     
     // Used to encode entire query strings
     var URLQueryStringEncodedValue: String {
-        if let encodedValue = self.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
+        if let encodedValue = self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
             return encodedValue
         } else {
             return self

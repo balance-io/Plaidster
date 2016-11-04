@@ -8,7 +8,7 @@
 
 import Foundation
 
-public typealias LoggingFunction = (item: Any) -> (Void)
+public typealias LoggingFunction = (_ item: Any) -> (Void)
 
 public enum PlaidProduct: String {
     case Connect = "connect"
@@ -16,8 +16,8 @@ public enum PlaidProduct: String {
 }
 
 public enum PlaidEnvironment {
-    case Production
-    case Development
+    case production
+    case development
 }
 
 public enum PlaidMFAType: String {
@@ -27,48 +27,56 @@ public enum PlaidMFAType: String {
 }
 
 public enum PlaidMFAResponseType {
-    case Code
-    case Question
-    case DeviceType
-    case DeviceMask
+    case code
+    case question
+    case deviceType
+    case deviceMask
 }
 
-private func cocoaErrorFromException(exception: ErrorType) -> NSError {
+private func cocoaErrorFromException(_ exception: Error) -> NSError {
     if let exception = exception as? PlaidErrorConvertible {
         return exception.cocoaError()
     } else {
-        return PlaidsterError.UnknownException(exception: exception).cocoaError()
+        return PlaidsterError.unknownException(exception: exception).cocoaError()
     }
 }
 
-private func throwPlaidsterError(code: Int?, _ message: String?) throws {
+private func throwPlaidsterError(_ code: Int?, _ message: String?) throws {
     if let code = code {
         switch code {
-        case PlaidErrorCode.InstitutionDown: throw PlaidError.InstitutionDown
-        case PlaidErrorCode.BadAccessToken: throw PlaidError.BadAccessToken
-        case PlaidErrorCode.ItemNotFound: throw PlaidError.ItemNotFound
-        default: throw PlaidError.GenericError(code, message)
+        case PlaidErrorCode.InstitutionDown: throw PlaidError.institutionDown
+        case PlaidErrorCode.BadAccessToken: throw PlaidError.badAccessToken
+        case PlaidErrorCode.ItemNotFound: throw PlaidError.itemNotFound
+        default: throw PlaidError.genericError(code, message)
         }
     }
 }
 
 public struct Plaidster {
     
+    private static var __once1: () = {
+            Plaidster.printRequestDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        }()
+    
+    private static var __once: () = {
+            Plaidster.JSONDateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
+        }()
+    
     //
     // MARK: - Constants -
     //
     
-    private static let DevelopmentBaseURL = "https://tartan.plaid.com/"
-    private static let ProductionBaseURL = "https://api.plaid.com/"
+    fileprivate static let DevelopmentBaseURL = "https://tartan.plaid.com/"
+    fileprivate static let ProductionBaseURL = "https://api.plaid.com/"
     
     //
     // MARK: - Properties -
     //
     
-    private let session = NSURLSession.sharedSession()
-    private let clientID: String
-    private let secret: String
-    private let baseURL: String
+    fileprivate let session = URLSession.shared
+    fileprivate let clientID: String
+    fileprivate let secret: String
+    fileprivate let baseURL: String
     
     //
     // MARK: - Logging -
@@ -80,21 +88,21 @@ public struct Plaidster {
     public var rawConnectionsLogger: LoggingFunction?
     
     // Optionally change the default connection timeout of 60 seconds
-    private static let defaultConnectionTimeout = 60.0
-    public var connectionTimeout: NSTimeInterval = Plaidster.defaultConnectionTimeout
+    fileprivate static let defaultConnectionTimeout = 60.0
+    public var connectionTimeout: TimeInterval = Plaidster.defaultConnectionTimeout
     
     //
     // MARK: - Initialisation -
     //
     
-    public init(clientID: String, secret: String, mode: PlaidEnvironment, connectionTimeout: NSTimeInterval = Plaidster.defaultConnectionTimeout) {
+    public init(clientID: String, secret: String, mode: PlaidEnvironment, connectionTimeout: TimeInterval = Plaidster.defaultConnectionTimeout) {
         self.clientID = clientID
         self.secret = secret
         
         switch mode {
-        case .Development:
+        case .development:
             self.baseURL = Plaidster.DevelopmentBaseURL
-        case .Production:
+        case .production:
             self.baseURL = Plaidster.ProductionBaseURL
         }
         
@@ -105,7 +113,7 @@ public struct Plaidster {
     // MARK: - Private Methods -
     //
     
-    private func log(item: Any) {
+    fileprivate func log(_ item: Any) {
         if let logger = logger {
             logger(item: item)
         } else {
@@ -113,11 +121,11 @@ public struct Plaidster {
         }
     }
     
-    func dictionaryToString(value: AnyObject) -> String {
-        guard NSJSONSerialization.isValidJSONObject(value) else { return "" }
+    func dictionaryToString(_ value: [String: AnyObject]) -> String {
+        guard JSONSerialization.isValidJSONObject(value) else { return "" }
         do {
-            let data = try NSJSONSerialization.dataWithJSONObject(value, options: NSJSONWritingOptions(rawValue: 0))
-            if let string = String(data: data, encoding: NSUTF8StringEncoding) {
+            let data = try JSONSerialization.data(withJSONObject: value, options: JSONSerialization.WritingOptions(rawValue: 0))
+            if let string = String(data: data, encoding: String.Encoding.utf8) {
                 return string
             }
         } catch {
@@ -127,34 +135,30 @@ public struct Plaidster {
         return ""
     }
     
-    static private let JSONDateFormatter = NSDateFormatter()
-    static private var JSONDateFormatterToken: dispatch_once_t = 0
-    func dateToJSONString(date: NSDate) -> String {
-        dispatch_once(&Plaidster.JSONDateFormatterToken) {
-            Plaidster.JSONDateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
-        }
+    static fileprivate let JSONDateFormatter = DateFormatter()
+    static fileprivate var JSONDateFormatterToken: Int = 0
+    func dateToJSONString(_ date: Date) -> String {
+        _ = Plaidster.__once
         
-        return Plaidster.JSONDateFormatter.stringFromDate(date)
+        return Plaidster.JSONDateFormatter.string(from: date)
     }
     
-    static private var printRequestDateFormatterToken: dispatch_once_t = 0
-    static private let printRequestDateFormatter = NSDateFormatter()
-    private func printRequest(request: NSURLRequest, responseData: NSData, function: String = #function) {
-        dispatch_once(&Plaidster.printRequestDateFormatterToken) {
-            Plaidster.printRequestDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        }
+    static fileprivate var printRequestDateFormatterToken: Int = 0
+    static fileprivate let printRequestDateFormatter = DateFormatter()
+    fileprivate func printRequest(_ request: URLRequest, responseData: Data, function: String = #function) {
+        _ = Plaidster.__once1
         
         if printRawConnections {
-            let url = request.URL?.absoluteString ?? "Failed to decode URL"
+            let url = request.url?.absoluteString ?? "Failed to decode URL"
             var body = ""
-            if let HTTPBody = request.HTTPBody {
-                if let HTTPBodyString = NSString(data: HTTPBody, encoding: NSUTF8StringEncoding) {
+            if let HTTPBody = request.httpBody {
+                if let HTTPBodyString = NSString(data: HTTPBody, encoding: String.Encoding.utf8.rawValue) {
                     body = HTTPBodyString as String
                 }
             }
-            let response = NSString(data: responseData, encoding: NSUTF8StringEncoding) ?? "Failed to convert response data to string"
+            let response = NSString(data: responseData, encoding: String.Encoding.utf8.rawValue) ?? "Failed to convert response data to string"
             
-            let date = Plaidster.printRequestDateFormatter.stringFromDate(NSDate())
+            let date = Plaidster.printRequestDateFormatter.string(from: Date())
             let logMessage = "\(date) \(function):\n" +
                              "URL: \(url)\n" +
                              "Body: \(body)\n" +
@@ -172,34 +176,34 @@ public struct Plaidster {
     // MARK: - Public Methods -
     //
     
-    public func addUser(username username: String, password: String, pin: String?, type: String, handler: AddUserHandler) {
+    public func addUser(username: String, password: String, pin: String?, type: String, handler: @escaping AddUserHandler) {
         let URLString = "\(baseURL)connect"
         
-        let optionsDictionaryString = self.dictionaryToString(["list": true])
+        let optionsDictionaryString = self.dictionaryToString(["list": true as AnyObject])
         var parameters = "client_id=\(clientID)&secret=\(secret)&username=\(username.URLQueryParameterEncodedValue)&password=\(password.URLQueryParameterEncodedValue)&type=\(type)&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         if let pin = pin {
             parameters += "&pin=\(pin)"
         }
         
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
-        request.HTTPMethod = HTTPMethod.Post
-        request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
+        request.httpMethod = HTTPMethod.Post
+        request.httpBody = parameters.data(using: String.Encoding.utf8)
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Check for Plaidster errors
@@ -209,7 +213,7 @@ public struct Plaidster {
                 
                 // Check for an access token
                 guard let token = JSONResult["access_token"] as? String else {
-                    throw PlaidsterError.JSONEmpty("No access token returned")
+                    throw PlaidsterError.jsonEmpty("No access token returned")
                 }
                 
                 // Check for an MFA response
@@ -217,12 +221,12 @@ public struct Plaidster {
                 let MFAResponse = JSONResult["mfa"] as? [[String: AnyObject]]
                 if (MFAType == nil || MFAResponse == nil) && !(MFAType == nil && MFAResponse == nil) {
                     // This should never happen. It should always return both pieces of data.
-                    throw PlaidsterError.JSONEmpty("Missing MFA information")
+                    throw PlaidsterError.jsonEmpty("Missing MFA information")
                 }
                 
-                if let MFAType = MFAType, MFAResponse = MFAResponse {
+                if let MFAType = MFAType, let MFAResponse = MFAResponse {
                     // Call handler with MFA response
-                    handler(accessToken: token, MFAType: MFAType, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
+                    handler(token, MFAType, MFAResponse, nil, nil, maybeError)
                 } else {
                     // Parse accounts if they're included
                     let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]]
@@ -255,41 +259,41 @@ public struct Plaidster {
                     }
                     
                     // Call the handler
-                    handler(accessToken: token, MFAType: nil, MFA: nil, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
+                    handler(token, nil, nil, managedAccounts, managedTransactions, maybeError)
                 }
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(accessToken: nil, MFAType: nil, MFA: nil, accounts: nil, transactions: nil, error: cocoaErrorFromException(error))
+                handler(nil, nil, nil, nil, nil, cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func removeUser(accessToken: String, handler: RemoveUserHandler) {
+    public func removeUser(_ accessToken: String, handler: @escaping RemoveUserHandler) {
         let URLString = "\(baseURL)connect"
         let parameters = "client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
         
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
-        request.HTTPMethod = HTTPMethod.Delete
+        request.httpMethod = HTTPMethod.Delete
         request.allHTTPHeaderFields = ["Content-Type": "application/x-www-form-urlencoded"]
-        request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
+        request.httpBody = parameters.data(using: String.Encoding.utf8)
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Check for Plaidster errors
@@ -298,64 +302,64 @@ public struct Plaidster {
                 try throwPlaidsterError(code, message)
                 
                 // Call the handler
-                handler(message: message, error: maybeError)
+                handler(message, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(message: nil, error: cocoaErrorFromException(error))
+                handler(nil, cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func submitMFACodeResponse(accessToken: String, code: String, handler: SubmitMFAHandler) {
-        submitMFAResponse(accessToken: accessToken, responseType: .Code, response: code, handler: handler)
+    public func submitMFACodeResponse(_ accessToken: String, code: String, handler: @escaping SubmitMFAHandler) {
+        submitMFAResponse(accessToken: accessToken, responseType: .code, response: code, handler: handler)
     }
     
-    public func submitMFAQuestionResponse(accessToken: String, answer: String, handler: SubmitMFAHandler) {
-        submitMFAResponse(accessToken: accessToken, responseType: .Question, response: answer, handler: handler)
+    public func submitMFAQuestionResponse(_ accessToken: String, answer: String, handler: @escaping SubmitMFAHandler) {
+        submitMFAResponse(accessToken: accessToken, responseType: .question, response: answer, handler: handler)
     }
     
-    public func submitMFADeviceType(accessToken: String, device: String, handler: SubmitMFAHandler) {
-        submitMFAResponse(accessToken: accessToken, responseType: .DeviceType, response: device, handler: handler)
+    public func submitMFADeviceType(_ accessToken: String, device: String, handler: @escaping SubmitMFAHandler) {
+        submitMFAResponse(accessToken: accessToken, responseType: .deviceType, response: device, handler: handler)
     }
     
-    public func submitMFADeviceMask(accessToken: String, mask: String, handler: SubmitMFAHandler) {
-        submitMFAResponse(accessToken: accessToken, responseType: .DeviceMask, response: mask, handler: handler)
+    public func submitMFADeviceMask(_ accessToken: String, mask: String, handler: @escaping SubmitMFAHandler) {
+        submitMFAResponse(accessToken: accessToken, responseType: .deviceMask, response: mask, handler: handler)
     }
     
-    public func submitMFAResponse(accessToken accessToken: String, responseType: PlaidMFAResponseType, response: String, handler: SubmitMFAHandler) {
+    public func submitMFAResponse(accessToken: String, responseType: PlaidMFAResponseType, response: String, handler: @escaping SubmitMFAHandler) {
         let URLString = "\(baseURL)connect/step"
         var parameters = "client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
         
         switch responseType {
-        case .Code, .Question:
+        case .code, .question:
             parameters += "&mfa=\(response.URLQueryParameterEncodedValue)"
-        case .DeviceType:
+        case .deviceType:
             parameters += "&options={\"send_method\":{\"type\":\"\(response)\"}}"
-        case .DeviceMask:
+        case .deviceMask:
             parameters += "&options={\"send_method\":{\"mask\":\"\(response)\"}}"
         }
         
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
-        request.HTTPMethod = HTTPMethod.Post
-        request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
+        request.httpMethod = HTTPMethod.Post
+        request.httpBody = parameters.data(using: String.Encoding.utf8)
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Check for Plaidster errors
@@ -372,9 +376,9 @@ public struct Plaidster {
                     }
                 }
                 
-                if let MFAType = MFAType, MFAResponse = MFAResponse {
+                if let MFAType = MFAType, let MFAResponse = MFAResponse {
                     // Call handler with MFA response
-                    handler(MFAType: MFAType, MFA: MFAResponse, accounts: nil, transactions: nil, error: maybeError)
+                    handler(MFAType, MFAResponse, nil, nil, maybeError)
                 } else {
                     // Parse accounts if they're included
                     let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]]
@@ -407,36 +411,36 @@ public struct Plaidster {
                     }
                     
                     // Call the handler
-                    handler(MFAType: nil, MFA: nil, accounts: managedAccounts, transactions: managedTransactions, error: maybeError)
+                    handler(nil, nil, managedAccounts, managedTransactions, maybeError)
                 }
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(MFAType: nil, MFA: nil, accounts: nil, transactions: nil, error: cocoaErrorFromException(error))
+                handler(nil, nil, nil, nil, cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func fetchUserBalance(accessToken: String, handler: FetchUserBalanceHandler) {
+    public func fetchUserBalance(_ accessToken: String, handler: @escaping FetchUserBalanceHandler) {
         let URLString = "\(baseURL)balance?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
         
-        let task = session.dataTaskWithRequest(request) { maybeData, maybeResponse, maybeError in
+        let task = session.dataTask(with: request, completionHandler: { maybeData, maybeResponse, maybeError in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Check for Plaidster errors
@@ -446,7 +450,7 @@ public struct Plaidster {
                 
                 // Check for accounts
                 guard let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]] else {
-                    throw PlaidsterError.JSONEmpty("No accounts returned")
+                    throw PlaidsterError.jsonEmpty("No accounts returned")
                 }
                 
                 // Map the accounts and call the handler
@@ -459,46 +463,46 @@ public struct Plaidster {
                         self.log(error)
                     }
                 }
-                handler(accounts: managedAccounts, error: maybeError)
+                handler(managedAccounts, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(accounts: [PlaidAccount](), error: cocoaErrorFromException(error))
+                handler([PlaidAccount](), cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func fetchUserTransactions(accessToken: String, showPending: Bool, beginDate: NSDate?, endDate: NSDate?, handler: FetchUserTransactionsHandler) {
+    public func fetchUserTransactions(_ accessToken: String, showPending: Bool, beginDate: Date?, endDate: Date?, handler: @escaping FetchUserTransactionsHandler) {
         // Process the options dictionary. This parameter is sent as a JSON dictionary.
-        var optionsDictionary: [String: AnyObject] = ["pending": true]
+        var optionsDictionary: [String: AnyObject] = ["pending": true as AnyObject]
         if let beginDate = beginDate {
-            optionsDictionary["gte"] = self.dateToJSONString(beginDate)
+            optionsDictionary["gte"] = self.dateToJSONString(beginDate) as AnyObject?
         }
         if let endDate = endDate {
-            optionsDictionary["lte"] = self.dateToJSONString(endDate)
+            optionsDictionary["lte"] = self.dateToJSONString(endDate) as AnyObject?
         }
         let optionsDictionaryString = self.dictionaryToString(optionsDictionary)
         
         // Create the URL string including the options dictionary
         let URLString = "\(baseURL)connect?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Check for Plaidster errors
@@ -508,7 +512,7 @@ public struct Plaidster {
                 
                 // Check for transactions
                 guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]] else {
-                    throw PlaidsterError.JSONEmpty("No transactions returned")
+                    throw PlaidsterError.jsonEmpty("No transactions returned")
                 }
                 
                 // Map the transactions and call the handler
@@ -521,35 +525,35 @@ public struct Plaidster {
                         self.log(error)
                     }
                 }
-                handler(transactions: managedTransactions, error: maybeError)
+                handler(managedTransactions, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(transactions: [PlaidTransaction](), error: cocoaErrorFromException(error))
+                handler([PlaidTransaction](), cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func fetchCategories(handler: FetchCategoriesHandler) {
+    public func fetchCategories(_ handler: @escaping FetchCategoriesHandler) {
         let URLString = "\(baseURL)categories"
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
         
-        let task = session.dataTaskWithRequest(request) { maybeData, maybeResponse, maybeError in
+        let task = session.dataTask(with: request, completionHandler: { maybeData, maybeResponse, maybeError in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: AnyObject]] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Map the categories and call the handler
@@ -563,35 +567,35 @@ public struct Plaidster {
                     }
                 }
                 
-                handler(categories: managedCategories, error: maybeError)
+                handler(managedCategories, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(categories: [PlaidCategory](), error: cocoaErrorFromException(error))
+                handler([PlaidCategory](), cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func fetchInstitutions(handler: FetchInstitutionsHandler) {
+    public func fetchInstitutions(_ handler: @escaping FetchInstitutionsHandler) {
         let URLString = "\(baseURL)institutions"
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: AnyObject]] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Map the institutions and call the handler
@@ -604,38 +608,38 @@ public struct Plaidster {
                         self.log(error)
                     }
                 }
-                handler(institutions: managedInstitutions, error: maybeError)
+                handler(managedInstitutions, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(institutions: [PlaidInstitution](), error: cocoaErrorFromException(error))
+                handler([PlaidInstitution](), cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func fetchLongtailInstitutions(count: Int, offset: Int, handler: FetchLongtailInstitutionsHandler) {
+    public func fetchLongtailInstitutions(_ count: Int, offset: Int, handler: @escaping FetchLongtailInstitutionsHandler) {
         let URLString = "\(baseURL)institutions/longtail"
         let parameters = "client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
-        request.HTTPMethod = HTTPMethod.Post
-        request.HTTPBody = parameters.dataUsingEncoding(NSUTF8StringEncoding)
+        request.httpMethod = HTTPMethod.Post
+        request.httpBody = parameters.data(using: String.Encoding.utf8)
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
-                    throw PlaidsterError.JSONEmpty(maybeError?.localizedDescription)
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
                 }
                 
                 // Print raw connection if option enabled
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject], let totalCount = JSONResult["total_count"] as? Int, let results = JSONResult["results"] as? [[String: AnyObject]] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject], let totalCount = JSONResult["total_count"] as? Int, let results = JSONResult["results"] as? [[String: AnyObject]] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Map the instututions and call the handler
@@ -648,33 +652,33 @@ public struct Plaidster {
                         self.log(error)
                     }
                 }
-                handler(institutions: managedInstitutions, totalCount: totalCount, error: maybeError)
+                handler(managedInstitutions, totalCount, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(institutions: [PlaidInstitution](), totalCount: -1, error: cocoaErrorFromException(error))
+                handler([PlaidInstitution](), -1, cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
     }
     
-    public func searchInstitutions(query query: String, product: PlaidProduct?, handler: SearchInstitutionsHandler) -> NSURLSessionDataTask {
+    public func searchInstitutions(query: String, product: PlaidProduct?, handler: @escaping SearchInstitutionsHandler) -> URLSessionDataTask {
         var URLString = "\(baseURL)institutions/search?q=\(query.URLQueryParameterEncodedValue)"
         if let product = product {
             URLString += "&p=\(product.rawValue)"
         }
        
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
+                guard let data = maybeData, maybeError == nil else {
                     // For whatever reason, this API returns empty on success when no results are returned,
                     // so in this case it's not an error. Just return an empty set.
-                    handler(institutions: [PlaidSearchInstitution](), error: nil)
+                    handler([PlaidSearchInstitution](), nil)
                     return
                 }
                 
@@ -682,8 +686,8 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [[String: AnyObject]] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: AnyObject]] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Map the instututions and call the handler
@@ -696,31 +700,31 @@ public struct Plaidster {
                         self.log(error)
                     }
                 }
-                handler(institutions: managedInstitutions, error: maybeError)
+                handler(managedInstitutions, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(institutions: [PlaidSearchInstitution](), error: cocoaErrorFromException(error))
+                handler([PlaidSearchInstitution](), cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
         
         return task
     }
     
-    public func searchInstitutions(id id: String, handler: SearchInstitutionsHandler) -> NSURLSessionDataTask {
+    public func searchInstitutions(id: String, handler: @escaping SearchInstitutionsHandler) -> URLSessionDataTask {
         let URLString = "\(baseURL)institutions/search?id=\(id)"
-        let URL = NSURL(string: URLString)!
-        let request = NSMutableURLRequest(URL: URL)
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
         
-        let task = session.dataTaskWithRequest(request) { (maybeData, maybeResponse, maybeError) in
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
                 // Make sure there's data
-                guard let data = maybeData where maybeError == nil else {
+                guard let data = maybeData, maybeError == nil else {
                     // For whatever reason, this API returns empty on success when no results are returned,
                     // so in this case it's not an error. Just return an empty set.
-                    handler(institutions: [PlaidSearchInstitution](), error: nil)
+                    handler([PlaidSearchInstitution](), nil)
                     return
                 }
                 
@@ -728,18 +732,18 @@ public struct Plaidster {
                 self.printRequest(request, responseData: data)
                 
                 // Try to parse the JSON
-                guard let JSONResult = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableContainers) as? [String: AnyObject] else {
-                    throw PlaidsterError.JSONDecodingFailed
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject] else {
+                    throw PlaidsterError.jsonDecodingFailed
                 }
                 
                 // Map the institution and call the handler
                 let managedInstitution = try PlaidSearchInstitution(institution: JSONResult)
-                handler(institutions: [managedInstitution], error: maybeError)
+                handler([managedInstitution], maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler(institutions: [PlaidSearchInstitution](), error: cocoaErrorFromException(error))
+                handler([PlaidSearchInstitution](), cocoaErrorFromException(error))
             }
-        }
+        }) 
         
         task.resume()
         

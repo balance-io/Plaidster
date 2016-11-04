@@ -8,17 +8,17 @@
 
 import Foundation
 
-public enum PlaidError: ErrorType, PlaidErrorConvertible {
-    case BadAccessToken
-    case MissingCredentials(String)
-    case InvalidCredentials(String)
-    case InvalidMFA(String)
-    case InstitutionNotAvailable
-    case InstitutionDown
-    case ItemNotFound
+public enum PlaidError: Error, PlaidErrorConvertible {
+    case badAccessToken
+    case missingCredentials(String)
+    case invalidCredentials(String)
+    case invalidMFA(String)
+    case institutionNotAvailable
+    case institutionDown
+    case itemNotFound
     
     // Used for not yet implemented values
-    case GenericError(Int, String?)
+    case genericError(Int, String?)
     
     public func errorDomain() -> String {
         return "PlaidsterErrorDomain"
@@ -26,36 +26,36 @@ public enum PlaidError: ErrorType, PlaidErrorConvertible {
     
     public func errorCode() -> Int {
         switch self {
-        case .BadAccessToken:               return PlaidErrorCode.BadAccessToken
-        case .MissingCredentials:           return PlaidErrorCode.MissingCredentials
-        case .InvalidCredentials:           return PlaidErrorCode.InvalidCredentials
-        case .InvalidMFA:                   return PlaidErrorCode.InvalidMFA
-        case .InstitutionNotAvailable:      return PlaidErrorCode.InstitutionNotAvailable
-        case .InstitutionDown:              return PlaidErrorCode.InstitutionDown
-        case .ItemNotFound:                 return PlaidErrorCode.ItemNotFound
+        case .badAccessToken:               return PlaidErrorCode.BadAccessToken
+        case .missingCredentials:           return PlaidErrorCode.MissingCredentials
+        case .invalidCredentials:           return PlaidErrorCode.InvalidCredentials
+        case .invalidMFA:                   return PlaidErrorCode.InvalidMFA
+        case .institutionNotAvailable:      return PlaidErrorCode.InstitutionNotAvailable
+        case .institutionDown:              return PlaidErrorCode.InstitutionDown
+        case .itemNotFound:                 return PlaidErrorCode.ItemNotFound
         
-        case .GenericError(let code, _):    return code
+        case .genericError(let code, _):    return code
         }
     }
     
     public func errorDescription() -> String {
         switch self {
-        case .BadAccessToken:
+        case .badAccessToken:
             return "Bad access token"
-        case .MissingCredentials(let message):
+        case .missingCredentials(let message):
             return "Missing credentials: \(message)"
-        case .InvalidCredentials(let message):
+        case .invalidCredentials(let message):
             return "Invalid credentials: \(message)"
-        case .InvalidMFA(let message):
+        case .invalidMFA(let message):
             return "Invalid MFA response: \(message)"
-        case .InstitutionNotAvailable:
+        case .institutionNotAvailable:
             return "Institution not available"
-        case .InstitutionDown:
+        case .institutionDown:
             return "Institution down"
-        case .ItemNotFound:
+        case .itemNotFound:
             return "Item not found"
             
-        case .GenericError(_, let message):
+        case .genericError(_, let message):
             return message ?? "Unknown error"
         }
     }
