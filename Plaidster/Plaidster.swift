@@ -176,7 +176,8 @@ public struct Plaidster {
     // MARK: - Public Methods -
     //
     
-    public func addUser(username: String, password: String, pin: String?, type: String, handler: @escaping AddUserHandler) {
+    // If accessToken is included, this is treated as a patch request to update the login credentials
+    public func addUser(username: String, password: String, pin: String?, type: String, accessToken: String? = nil, handler: @escaping AddUserHandler) {
         let URLString = "\(baseURL)connect"
         
         let optionsDictionaryString = self.dictionaryToString(["list": true as AnyObject])
@@ -184,12 +185,20 @@ public struct Plaidster {
         if let pin = pin {
             parameters += "&pin=\(pin)"
         }
+        if let accessToken = accessToken {
+            parameters += "&access_token=\(accessToken)"
+        }
         
         let URL = Foundation.URL(string: URLString)!
         var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
-        request.httpMethod = HTTPMethod.Post
         request.httpBody = parameters.data(using: String.Encoding.utf8)
+        if accessToken == nil {
+            request.httpMethod = HTTPMethod.Post
+        } else {
+            request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            request.httpMethod = HTTPMethod.Patch
+        }
         
         let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
@@ -312,23 +321,23 @@ public struct Plaidster {
         task.resume()
     }
     
-    public func submitMFACodeResponse(_ accessToken: String, code: String, handler: @escaping SubmitMFAHandler) {
+    public func submitMFACodeResponse(accessToken: String, code: String, patch: Bool = false, handler: @escaping SubmitMFAHandler) {
         submitMFAResponse(accessToken: accessToken, responseType: .code, response: code, handler: handler)
     }
     
-    public func submitMFAQuestionResponse(_ accessToken: String, answer: String, handler: @escaping SubmitMFAHandler) {
+    public func submitMFAQuestionResponse(accessToken: String, answer: String, patch: Bool = false, handler: @escaping SubmitMFAHandler) {
         submitMFAResponse(accessToken: accessToken, responseType: .question, response: answer, handler: handler)
     }
     
-    public func submitMFADeviceType(_ accessToken: String, device: String, handler: @escaping SubmitMFAHandler) {
+    public func submitMFADeviceType(accessToken: String, device: String, patch: Bool = false, handler: @escaping SubmitMFAHandler) {
         submitMFAResponse(accessToken: accessToken, responseType: .deviceType, response: device, handler: handler)
     }
     
-    public func submitMFADeviceMask(_ accessToken: String, mask: String, handler: @escaping SubmitMFAHandler) {
+    public func submitMFADeviceMask(accessToken: String, mask: String, patch: Bool = false, handler: @escaping SubmitMFAHandler) {
         submitMFAResponse(accessToken: accessToken, responseType: .deviceMask, response: mask, handler: handler)
     }
     
-    public func submitMFAResponse(accessToken: String, responseType: PlaidMFAResponseType, response: String, handler: @escaping SubmitMFAHandler) {
+    public func submitMFAResponse(accessToken: String, responseType: PlaidMFAResponseType, response: String, patch: Bool = false, handler: @escaping SubmitMFAHandler) {
         let URLString = "\(baseURL)connect/step"
         var parameters = "client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
         
@@ -344,7 +353,7 @@ public struct Plaidster {
         let URL = Foundation.URL(string: URLString)!
         var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
-        request.httpMethod = HTTPMethod.Post
+        request.httpMethod = patch ? HTTPMethod.Post : HTTPMethod.Patch
         request.httpBody = parameters.data(using: String.Encoding.utf8)
         
         let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
