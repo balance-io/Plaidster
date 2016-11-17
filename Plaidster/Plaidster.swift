@@ -192,13 +192,9 @@ public struct Plaidster {
         let URL = Foundation.URL(string: URLString)!
         var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
+        request.httpMethod = accessToken == nil ? HTTPMethod.Post : HTTPMethod.Patch
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = parameters.data(using: String.Encoding.utf8)
-        if accessToken == nil {
-            request.httpMethod = HTTPMethod.Post
-        } else {
-            request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            request.httpMethod = HTTPMethod.Patch
-        }
         
         let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
             do {
@@ -287,7 +283,7 @@ public struct Plaidster {
         var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
         request.httpMethod = HTTPMethod.Delete
-        request.allHTTPHeaderFields = ["Content-Type": "application/x-www-form-urlencoded"]
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = parameters.data(using: String.Encoding.utf8)
         
         let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
@@ -353,7 +349,8 @@ public struct Plaidster {
         let URL = Foundation.URL(string: URLString)!
         var request = URLRequest(url: URL)
         request.timeoutInterval = connectionTimeout
-        request.httpMethod = patch ? HTTPMethod.Post : HTTPMethod.Patch
+        request.httpMethod = patch ? HTTPMethod.Patch : HTTPMethod.Post
+        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = parameters.data(using: String.Encoding.utf8)
         
         let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
