@@ -53,14 +53,6 @@ private func throwPlaidsterError(_ code: Int?, _ message: String?) throws {
 
 public struct Plaidster {
     
-    private static var __once1: () = {
-            Plaidster.printRequestDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        }()
-    
-    private static var __once: () = {
-            Plaidster.JSONDateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
-        }()
-    
     //
     // MARK: - Constants -
     //
@@ -134,19 +126,23 @@ public struct Plaidster {
         return ""
     }
     
-    static fileprivate let JSONDateFormatter = DateFormatter()
-    static fileprivate var JSONDateFormatterToken: Int = 0
+    static fileprivate let JSONDateFormatter: DateFormatter = {
+        let JSONDateFormatter = DateFormatter()
+        JSONDateFormatter.dateFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
+        return JSONDateFormatter
+    }()
+    
     func dateToJSONString(_ date: Date) -> String {
-        _ = Plaidster.__once
-        
         return Plaidster.JSONDateFormatter.string(from: date)
     }
     
-    static fileprivate var printRequestDateFormatterToken: Int = 0
-    static fileprivate let printRequestDateFormatter = DateFormatter()
+    static fileprivate let printRequestDateFormatter: DateFormatter = {
+        let printRequestDateFormatter = DateFormatter()
+        printRequestDateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return printRequestDateFormatter
+    }()
+    
     fileprivate func printRequest(_ request: URLRequest, responseData: Data, function: String = #function) {
-        _ = Plaidster.__once1
-        
         if printRawConnections {
             let url = request.url?.absoluteString ?? "Failed to decode URL"
             var body = ""
