@@ -43,11 +43,10 @@ private func cocoaErrorFromException(_ exception: Error) -> NSError {
 
 private func throwPlaidsterError(_ code: Int?, _ message: String?) throws {
     if let code = code {
-        switch code {
-        case PlaidErrorCode.InstitutionDown: throw PlaidError.institutionDown
-        case PlaidErrorCode.BadAccessToken: throw PlaidError.badAccessToken
-        case PlaidErrorCode.ItemNotFound: throw PlaidError.itemNotFound
-        default: throw PlaidError.genericError(code, message)
+        if let plaidError = PlaidError(rawValue: code) {
+            throw plaidError
+        } else {
+            throw PlaidsterError.genericPlaidError(code, message)
         }
     }
 }

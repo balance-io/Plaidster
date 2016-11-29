@@ -8,6 +8,8 @@
 
 import Foundation
 
+let plaidsterErrorDomain = "PlaidsterErrorDomain"
+
 func checkType<T, U>(_ value: T?, name: String, file: String = #file, line: Int = #line, function: String = #function) throws -> U {
     let fileName = NSURL(fileURLWithPath: file).deletingPathExtension?.lastPathComponent ?? file
     let functionName = function.components(separatedBy: "(").first ?? function
@@ -37,8 +39,15 @@ public enum PlaidsterError: Error, PlaidErrorConvertible {
     case invalidType(String?)
     case unknownException(exception: Error)
     
+    // Used for not yet implemented values
+    case genericPlaidError(Int, String?)
+    
     public func errorDomain() -> String {
-        return "PlaidsterErrorDomain"
+        if case .genericPlaidError = self {
+            return plaidErrorDomain
+        } else {
+            return plaidsterErrorDomain
+        }
     }
     
     public func errorCode() -> Int {
@@ -48,6 +57,8 @@ public enum PlaidsterError: Error, PlaidErrorConvertible {
         case .jsonEmpty:            return 3
         case .invalidType:          return 4
         case .unknownException:     return Int.max
+            
+        case .genericPlaidError(let code, _):    return code
         }
     }
     
@@ -71,6 +82,9 @@ public enum PlaidsterError: Error, PlaidErrorConvertible {
             }
         case .unknownException(let exception):
             return "Unknown exception: \(exception)"
+            
+        case .genericPlaidError(_, let message):
+            return message ?? "Unknown error"
         }
     }
     
