@@ -35,6 +35,12 @@ public struct PlaidSearchInstitution {
         public var name: String
         public var label: String
         public var type: String
+        
+        public init(name: String, label: String, type: String) {
+            self.name = name
+            self.label = label
+            self.type = type
+        }
     }
     
     // MARK: Properties

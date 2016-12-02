@@ -47,4 +47,16 @@ public struct PlaidInstitution {
         type = try checkType(institution, name: "type")
         url = institution["url"] as? String
     }
+    
+    public init(currencyCode: String, usernameLabel: String, passwordLabel: String, hasMfa: Bool, mfa: [String], name: String, products: [String], type: String, url: String?) {
+        self.currencyCode = currencyCode
+        self.usernameLabel = usernameLabel
+        self.passwordLabel = passwordLabel
+        self.hasMfa = hasMfa
+        self.mfa = mfa
+        self.name = name
+        self.products = products
+        self.type = type
+        self.url = url
+    }
 }
