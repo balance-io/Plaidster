@@ -578,6 +578,7 @@ public struct Plaidster {
         task.resume()
     }
     
+    @available(*, deprecated)
     public func fetchInstitutions(_ handler: @escaping FetchInstitutionsHandler) {
         let URLString = "\(baseURL)institutions"
         let URL = Foundation.URL(string: URLString)!
@@ -619,6 +620,7 @@ public struct Plaidster {
         task.resume()
     }
     
+    @available(*, deprecated)
     public func fetchLongtailInstitutions(_ count: Int, offset: Int, handler: @escaping FetchLongtailInstitutionsHandler) {
         let URLString = "\(baseURL)institutions/longtail"
         let parameters = "client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
@@ -663,6 +665,7 @@ public struct Plaidster {
         task.resume()
     }
     
+    @available(*, deprecated)
     public func searchInstitutions(query: String, product: PlaidProduct?, handler: @escaping SearchInstitutionsHandler) -> URLSessionDataTask {
         var URLString = "\(baseURL)institutions/search?q=\(query.URLQueryParameterEncodedValue)"
         if let product = product {
@@ -713,6 +716,7 @@ public struct Plaidster {
         return task
     }
     
+    @available(*, deprecated)
     public func searchInstitutions(id: String, handler: @escaping SearchInstitutionsHandler) -> URLSessionDataTask {
         let URLString = "\(baseURL)institutions/search?id=\(id)"
         let URL = Foundation.URL(string: URLString)!
@@ -745,6 +749,138 @@ public struct Plaidster {
                 handler([PlaidSearchInstitution](), cocoaErrorFromException(error))
             }
         }) 
+        
+        task.resume()
+        
+        return task
+    }
+    
+    public func fetchInstitutionsAll(_ count: Int, offset: Int, handler: @escaping FetchLongtailInstitutionsHandler) {
+        let URLString = "\(baseURL)institutions/all"
+        let parameters = "client_id=\(clientID)&secret=\(secret)&count=\(count)&offset=\(offset)"
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
+        request.timeoutInterval = connectionTimeout
+        request.httpMethod = HTTPMethod.Post
+        request.httpBody = parameters.data(using: String.Encoding.utf8)
+        
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
+            do {
+                // Make sure there's data
+                guard let data = maybeData, maybeError == nil else {
+                    throw PlaidsterError.jsonEmpty(maybeError?.localizedDescription)
+                }
+                
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
+                
+                // Try to parse the JSON
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject], let totalCount = JSONResult["total_count"] as? Int, let results = JSONResult["results"] as? [[String: AnyObject]] else {
+                    throw PlaidsterError.jsonDecodingFailed
+                }
+                
+                // Map the instututions and call the handler
+                var managedInstitutions = [PlaidInstitution]()
+                for result in results {
+                    do {
+                        let institution = try PlaidInstitution(institution: result)
+                        managedInstitutions.append(institution)
+                    } catch {
+                        self.log(error)
+                    }
+                }
+                handler(managedInstitutions, totalCount, maybeError)
+            } catch {
+                // Convert exceptions into NSErrors for the handler
+                handler([PlaidInstitution](), -1, cocoaErrorFromException(error))
+            }
+        })
+        
+        task.resume()
+    }
+    
+    public func searchInstitutionsAll(query: String, product: PlaidProduct?, handler: @escaping SearchInstitutionsHandler) -> URLSessionDataTask {
+        var URLString = "\(baseURL)institutions/all/search?q=\(query.URLQueryParameterEncodedValue)"
+        if let product = product {
+            URLString += "&p=\(product.rawValue)"
+        }
+        
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
+        request.timeoutInterval = connectionTimeout
+        
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
+            do {
+                // Make sure there's data
+                guard let data = maybeData, maybeError == nil else {
+                    // For whatever reason, this API returns empty on success when no results are returned,
+                    // so in this case it's not an error. Just return an empty set.
+                    handler([PlaidSearchInstitution](), nil)
+                    return
+                }
+                
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
+                
+                // Try to parse the JSON
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [[String: AnyObject]] else {
+                    throw PlaidsterError.jsonDecodingFailed
+                }
+                
+                // Map the instututions and call the handler
+                var managedInstitutions = [PlaidSearchInstitution]()
+                for result in JSONResult {
+                    do {
+                        let institution = try PlaidSearchInstitution(institution: result)
+                        managedInstitutions.append(institution)
+                    } catch {
+                        self.log(error)
+                    }
+                }
+                handler(managedInstitutions, maybeError)
+            } catch {
+                // Convert exceptions into NSErrors for the handler
+                handler([PlaidSearchInstitution](), cocoaErrorFromException(error))
+            }
+        })
+        
+        task.resume()
+        
+        return task
+    }
+    
+    public func searchInstitutionsAll(id: String, handler: @escaping SearchInstitutionsHandler) -> URLSessionDataTask {
+        let URLString = "\(baseURL)institutions/all/search?id=\(id)"
+        let URL = Foundation.URL(string: URLString)!
+        var request = URLRequest(url: URL)
+        request.timeoutInterval = connectionTimeout
+        
+        let task = session.dataTask(with: request, completionHandler: { (maybeData, maybeResponse, maybeError) in
+            do {
+                // Make sure there's data
+                guard let data = maybeData, maybeError == nil else {
+                    // For whatever reason, this API returns empty on success when no results are returned,
+                    // so in this case it's not an error. Just return an empty set.
+                    handler([PlaidSearchInstitution](), nil)
+                    return
+                }
+                
+                // Print raw connection if option enabled
+                self.printRequest(request, responseData: data)
+                
+                // Try to parse the JSON
+                guard let JSONResult = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: AnyObject] else {
+                    throw PlaidsterError.jsonDecodingFailed
+                }
+                
+                // Map the institution and call the handler
+                let managedInstitution = try PlaidSearchInstitution(institution: JSONResult)
+                handler([managedInstitution], maybeError)
+            } catch {
+                // Convert exceptions into NSErrors for the handler
+                handler([PlaidSearchInstitution](), cocoaErrorFromException(error))
+            }
+        })
         
         task.resume()
         
