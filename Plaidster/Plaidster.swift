@@ -112,7 +112,7 @@ public struct Plaidster {
         }
     }
     
-    func dictionaryToString(_ value: [String: AnyObject]) -> String {
+    func dictionaryToString(_ value: [String: Any]) -> String {
         guard JSONSerialization.isValidJSONObject(value) else { return "" }
         do {
             let data = try JSONSerialization.data(withJSONObject: value, options: JSONSerialization.WritingOptions(rawValue: 0))
@@ -132,8 +132,18 @@ public struct Plaidster {
         return JSONDateFormatter
     }()
     
-    func dateToJSONString(_ date: Date) -> String {
+    static fileprivate let ISO8601DateFormatter: DateFormatter = {
+        let addUserDateFormatter = DateFormatter()
+        addUserDateFormatter.dateFormat = "yyyy-MM-dd"
+        return addUserDateFormatter
+    }()
+    
+    fileprivate func dateToJSONString(_ date: Date) -> String {
         return Plaidster.JSONDateFormatter.string(from: date)
+    }
+    
+    fileprivate func dateToISO8601String(_ date: Date) -> String {
+        return Plaidster.ISO8601DateFormatter.string(from: date)
     }
     
     static fileprivate let printRequestDateFormatter: DateFormatter = {
@@ -172,10 +182,27 @@ public struct Plaidster {
     //
     
     // If accessToken is included, this is treated as a patch request to update the login credentials
-    public func addUser(username: String, password: String, pin: String?, type: String, accessToken: String? = nil, handler: @escaping AddUserHandler) {
+    public func addUser(username: String, password: String, pin: String?, type: String, pending: Bool = false, webhookUrl: String? = nil, startDate: Date? = nil, endDate: Date? = nil, accessToken: String? = nil, handler: @escaping AddUserHandler) {
         let URLString = "\(baseURL)connect"
         
-        let optionsDictionaryString = self.dictionaryToString(["list": true as AnyObject])
+        var optionsDictionary: [String: Any] = ["list": true]
+        if let webhookUrl = webhookUrl {
+            optionsDictionary["webhook"] = webhookUrl
+            optionsDictionary["login_only"] = true
+        } else {
+            // Only relevant if no webhook
+            if let startDate = startDate {
+                optionsDictionary["start_date"] = dateToISO8601String(startDate)
+            }
+            if let endDate = endDate {
+                optionsDictionary["end_date"] = dateToISO8601String(endDate)
+            }
+            if pending {
+                optionsDictionary["pending"] = true
+            }
+        }
+        
+        let optionsDictionaryString = self.dictionaryToString(optionsDictionary)
         var parameters = "client_id=\(clientID)&secret=\(secret)&username=\(username.URLQueryParameterEncodedValue)&password=\(password.URLQueryParameterEncodedValue)&type=\(type)&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
         if let pin = pin {
             parameters += "&pin=\(pin)"
