@@ -501,14 +501,14 @@ public struct Plaidster {
         task.resume()
     }
     
-    public func fetchUserTransactions(_ accessToken: String, showPending: Bool, beginDate: Date?, endDate: Date?, handler: @escaping FetchUserTransactionsHandler) {
+    public func fetchUserTransactions(_ accessToken: String, pending: Bool, beginDate: Date?, endDate: Date?, handler: @escaping FetchUserTransactionsHandler) {
         // Process the options dictionary. This parameter is sent as a JSON dictionary.
-        var optionsDictionary: [String: AnyObject] = ["pending": true as AnyObject]
+        var optionsDictionary: [String: Any] = ["pending": pending]
         if let beginDate = beginDate {
-            optionsDictionary["gte"] = self.dateToJSONString(beginDate) as AnyObject?
+            optionsDictionary["gte"] = self.dateToJSONString(beginDate)
         }
         if let endDate = endDate {
-            optionsDictionary["lte"] = self.dateToJSONString(endDate) as AnyObject?
+            optionsDictionary["lte"] = self.dateToJSONString(endDate)
         }
         let optionsDictionaryString = self.dictionaryToString(optionsDictionary)
         
