@@ -64,7 +64,7 @@ public struct Plaidster {
     // MARK: - Properties -
     //
     
-    fileprivate let session = URLSession.shared
+    fileprivate let session: URLSession
     fileprivate let clientID: String
     fileprivate let secret: String
     fileprivate let baseURL: String
@@ -86,7 +86,7 @@ public struct Plaidster {
     // MARK: - Initialisation -
     //
     
-    public init(clientID: String, secret: String, mode: PlaidEnvironment, connectionTimeout: TimeInterval = Plaidster.defaultConnectionTimeout) {
+    public init(clientID: String, secret: String, mode: PlaidEnvironment, connectionTimeout: TimeInterval = Plaidster.defaultConnectionTimeout, urlSessionDelegate: URLSessionDelegate? = nil) {
         self.clientID = clientID
         self.secret = secret
         
@@ -98,6 +98,8 @@ public struct Plaidster {
         }
         
         self.connectionTimeout = connectionTimeout
+        
+        self.session = URLSession(configuration: .default, delegate: urlSessionDelegate, delegateQueue: nil)
     }
     
     //
