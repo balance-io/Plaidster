@@ -184,25 +184,26 @@ public struct Plaidster {
     //
     
     // If accessToken is included, this is treated as a patch request to update the login credentials
-    public func addUser(username: String, password: String, pin: String?, type: String, pending: Bool = false, webhookUrl: String? = nil, startDate: Date? = nil, endDate: Date? = nil, accessToken: String? = nil, handler: @escaping AddUserHandler) {
+    public func addUser(username: String, password: String, pin: String?, type: String, pending: Bool = false, loginOnly: Bool = false, webhookUrl: String? = nil, startDate: Date? = nil, endDate: Date? = nil, accessToken: String? = nil, handler: @escaping AddUserHandler) {
         let URLString = "\(baseURL)connect"
         
         var optionsDictionary: [String: Any] = ["list": true]
+        if pending {
+            optionsDictionary["pending"] = true
+        }
+        if loginOnly {
+            optionsDictionary["login_only"] = true
+        }
         if let webhookUrl = webhookUrl {
             optionsDictionary["webhook"] = webhookUrl
-            optionsDictionary["login_only"] = true
-        } else {
-            // Only relevant if no webhook
-            if let startDate = startDate {
-                optionsDictionary["start_date"] = dateToISO8601String(startDate)
-            }
-            if let endDate = endDate {
-                optionsDictionary["end_date"] = dateToISO8601String(endDate)
-            }
-            if pending {
-                optionsDictionary["pending"] = true
-            }
         }
+        if let startDate = startDate {
+            optionsDictionary["start_date"] = dateToISO8601String(startDate)
+        }
+        if let endDate = endDate {
+            optionsDictionary["end_date"] = dateToISO8601String(endDate)
+        }
+        
         
         let optionsDictionaryString = self.dictionaryToString(optionsDictionary)
         var parameters = "client_id=\(clientID)&secret=\(secret)&username=\(username.URLQueryParameterEncodedValue)&password=\(password.URLQueryParameterEncodedValue)&type=\(type)&options=\(optionsDictionaryString.URLQueryParameterEncodedValue)"
