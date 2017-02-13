@@ -108,7 +108,7 @@ public enum PlaidError: Int, Error, PlaidErrorConvertible {
         case .rateLimitExceeded: return "You have exceeded your request rate limit for this product. Try again soon."
         case .unauthorizedEnvironment: return "Your Client ID is not authorized to access this API environment. Contact support@plaid.com to gain access."
         case .productAlreadyEnabled: return "The specified product is already enabled for this item. Call the corresponding product endpoint directly."
-        case .invalidCredentials: return "The username or password provided were not correct."
+        case .invalidCredentials: return "The username or password was not correct, or there was an unkown connection issue. If you're certain the credentials are correct, please try again in 24 hours."
         case .invalidUsername: return "The username provided was not correct."
         case .invalidPassword: return "The password provided was not correct."
         case .invalidMFA: return "The multi-factor authentication response provided was not correct."
