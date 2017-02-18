@@ -70,6 +70,22 @@ public enum PlaidError: Int, Error, PlaidErrorConvertible {
     case plaidError                   = 1702
     case plannedMaintenance           = 1800
     
+    // Whether this error message signifies that the institution needs a patch request
+    public var requiresPatch: Bool {
+        switch self {
+        case .itemNotFound, .mfaReset:
+            // These have been tested to definitely be correct, as we've seen them in production.
+            // ItemNotFound seems to happen after a password change.
+            // MfaReset seems to happen frequently, perhaps because of some server side mfa requirement or other reason
+            return true
+        case .invalidCredentials, .invalidUsername, .invalidPassword, .invalidPin, .invalidMFA:
+            // Adding these just in case, as they seem sensible
+            return true
+        default:
+            return false
+        }
+    }
+    
     public func errorDomain() -> String {
         return plaidsterErrorDomain
     }
