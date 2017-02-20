@@ -153,7 +153,7 @@ public enum PlaidError: Int, Error, PlaidErrorConvertible {
         case .productNotFound: return "This product doesn't exist yet"
         case .productNotAvailable: return "This product is not yet available for this institution."
         case .accountNotFound: return "The account ID provided was not correct."
-        case .itemNotFound: return "No matching items found; go add an account!"
+        case .itemNotFound: return "No matching items found; this token was likely deleted."
         case .extractorError: return "We failed to pull the required information from the institution - make sure the user can access their account; we have been notified."
         case .extractorErrorRetry: return "We failed to pull the required information from the institution - resubmit this query."
         case .plaidError: return "An unexpected error has occurred on our systems; we've been notified and are looking into it!"
