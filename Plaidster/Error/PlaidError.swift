@@ -73,12 +73,12 @@ public enum PlaidError: Int, Error, PlaidErrorConvertible {
     // Whether this error message signifies that the institution needs a patch request
     public var requiresPatch: Bool {
         switch self {
-        case .itemNotFound, .mfaReset:
+        case .invalidCredentials, .mfaReset:
             // These have been tested to definitely be correct, as we've seen them in production.
-            // ItemNotFound seems to happen after a password change.
+            // InvalidCredentials seems to happen after a password change.
             // MfaReset seems to happen frequently, perhaps because of some server side mfa requirement or other reason
             return true
-        case .invalidCredentials, .invalidUsername, .invalidPassword, .invalidPin, .invalidMFA:
+        case .invalidUsername, .invalidPassword, .invalidPin, .invalidMFA:
             // Adding these just in case, as they seem sensible
             return true
         default:
