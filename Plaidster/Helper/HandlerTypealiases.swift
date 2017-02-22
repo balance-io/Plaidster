@@ -13,7 +13,7 @@ public typealias RemoveUserHandler = (_ message: String?, _ error: Error?) -> (V
 
 public typealias SubmitMFAHandler = (_ MFAType: PlaidMFAType?, _ MFA: [[String: AnyObject]]?, _ accounts: [PlaidAccount]?, _ transactions: [PlaidTransaction]?, _ error: Error?) -> (Void)
 public typealias FetchUserBalanceHandler = (_ accounts: [PlaidAccount], _ error: Error?) -> (Void)
-public typealias FetchUserTransactionsHandler = (_ transactions: [PlaidTransaction], _ error: Error?) -> (Void)
+public typealias FetchUserAccountsAndTransactionsHandler = (_ accounts: [PlaidAccount], _ transactions: [PlaidTransaction], _ error: Error?) -> (Void)
 public typealias FetchCategoriesHandler = (_ categories: [PlaidCategory], _ error: Error?) -> (Void)
 public typealias FetchInstitutionsHandler = (_ institutions: [PlaidInstitution], _ error: Error?) -> (Void)
 public typealias FetchLongtailInstitutionsHandler = (_ institutions: [PlaidInstitution], _ totalCount: Int, _ error: Error?) -> (Void)

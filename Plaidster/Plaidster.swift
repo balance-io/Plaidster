@@ -456,7 +456,9 @@ public struct Plaidster {
         task.resume()
     }
     
-    public func fetchUserBalance(_ accessToken: String, handler: @escaping FetchUserBalanceHandler) {
+    // Pulls the real time account balance, which may differ than the balance returned by fetchUserTransactions
+    // NOTE: This API call incurs a fee per call
+    public func fetchRealTimeUserBalance(_ accessToken: String, handler: @escaping FetchUserBalanceHandler) {
         let URLString = "\(baseURL)balance?client_id=\(clientID)&secret=\(secret)&access_token=\(accessToken)"
         let URL = Foundation.URL(string: URLString)!
         var request = URLRequest(url: URL)
@@ -508,7 +510,10 @@ public struct Plaidster {
         task.resume()
     }
     
-    public func fetchUserTransactions(_ accessToken: String, pending: Bool, beginDate: Date?, endDate: Date?, handler: @escaping FetchUserTransactionsHandler) {
+    // Pulls account and transaction data from Plaid's last sync to the institution. Use this call to update UI in app as the
+    // balance and transactions will match.
+    // NOTE: This call does not incur a fee
+    public func fetchUserAccountsAndTransactions(_ accessToken: String, pending: Bool, beginDate: Date?, endDate: Date?, handler: @escaping FetchUserAccountsAndTransactionsHandler) {
         // Process the options dictionary. This parameter is sent as a JSON dictionary.
         var optionsDictionary: [String: Any] = ["pending": pending]
         if let beginDate = beginDate {
@@ -546,12 +551,28 @@ public struct Plaidster {
                 let message = JSONResult["message"] as? String
                 try throwPlaidsterError(code, message)
                 
+                // Check for accounts
+                guard let unmanagedAccounts = JSONResult["accounts"] as? [[String: AnyObject]] else {
+                    throw PlaidsterError.jsonEmpty("No accounts returned")
+                }
+                
                 // Check for transactions
                 guard let unmanagedTransactions = JSONResult["transactions"] as? [[String: AnyObject]] else {
                     throw PlaidsterError.jsonEmpty("No transactions returned")
                 }
                 
-                // Map the transactions and call the handler
+                // Map the accounts
+                var managedAccounts = [PlaidAccount]()
+                for result in unmanagedAccounts {
+                    do {
+                        let account = try PlaidAccount(account: result)
+                        managedAccounts.append(account)
+                    } catch {
+                        self.log(error)
+                    }
+                }
+                
+                // Map the transactions
                 var managedTransactions = [PlaidTransaction]()
                 for result in unmanagedTransactions {
                     do {
@@ -561,10 +582,11 @@ public struct Plaidster {
                         self.log(error)
                     }
                 }
-                handler(managedTransactions, maybeError)
+                
+                handler(managedAccounts, managedTransactions, maybeError)
             } catch {
                 // Convert exceptions into NSErrors for the handler
-                handler([PlaidTransaction](), cocoaErrorFromException(error))
+                handler([PlaidAccount](), [PlaidTransaction](), cocoaErrorFromException(error))
             }
         }) 
         
