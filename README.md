@@ -1,3 +1,7 @@
+# NOTE: This Plaidster library is no longer supported or recommended for use. It uses an old way of connecting to Plaid. Please use the newer PlaidLink connection method along with the Plaid V2 API. This repository will now be archived.
+
+---
+
 # Plaidster
 
 ## Features
